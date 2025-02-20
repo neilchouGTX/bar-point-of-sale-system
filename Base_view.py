@@ -6,7 +6,7 @@ from views.Login_view import *
 from views.Upper_view import *
 from views.Home_view import *
 from views.Order_viewNew import *
-# Base View - For managing multiple pages
+from views.Staff_view import *
 
 class BaseView(tk.Tk):
     def __init__(self, controller):
@@ -21,10 +21,8 @@ class BaseView(tk.Tk):
         self.grid_rowconfigure(1, weight=9)
         self.grid_columnconfigure(0, weight=1)
         
-
-        #  initial frame pages
-
-        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew):
+        # Initialize Frame pages
+        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew, StaffView):
             page_name = F.__name__
             frame = F(root=self, controller=self.controller)
             self.frames[page_name] = frame
