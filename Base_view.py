@@ -22,7 +22,7 @@ class BaseView(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
         
 
-        # 初始化 Frame 頁面
+        #  initial frame pages
 
         for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew):
             page_name = F.__name__

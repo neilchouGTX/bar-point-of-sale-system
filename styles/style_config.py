@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import font
 
+#this file is for storing the styles of the buttons and fonts
+
 def get_custom_font(root):
     return font.Font(root=root, family="Helvetica", size=12, weight="bold")
 

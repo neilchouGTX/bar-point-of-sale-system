@@ -19,50 +19,17 @@ class UsersModel():
             if thedata["username"]==username and thedata["password"]==password:
                 return thedata
 
-
-# class BeerModel():
-#     def __init__(self):
-#         folder_path = os.getcwd()  
-#         db_path=os.path.join(folder_path, "DBFilesJson")
-#         db_path=os.path.join(db_path, "dutchman_table_sbl_beer.json")
-#         # Open and read the JSON file
-#         with open(db_path, 'r') as file:
-#             self.data = json.load(file)
-#         self.varugrupps=[]
-#         self.staticData=[]
-#         self.jsonToObject()
-
-#     def jsonToObject(self):
-#         for theData in self.data:
-#             theStaticData=BeerStaticData()
-
-#             for key,value in theData.items():
-#                 if hasattr(theStaticData, key):
-#                     setattr(theStaticData, key, value)
-
-#             self.staticData.append(theStaticData)
-#             if not theStaticData.varugrupp in self.varugrupps:
-#                 self.varugrupps.append(theStaticData.varugrupp)
-
-#     def getDataByCategory(self,varugrupp):
-#         result=[]
-#         for theData in self.staticData:
-#             if theData.varugrupp==varugrupp:
-#                 result.append(theData)
-
-#         return result
-
 class BeerStaticData():
-    """用來儲存單個酒品的資訊"""
+    """save all the data of the beer"""
     def __init__(self, nr=None, namn=None, varugrupp=None, producent=None, ursprunglandnamn=None, alkoholhalt=None, prisinklmoms=None, forpackning=None):
-        self.nr = nr  # 商品編號
-        self.namn = namn  # 酒品名稱
-        self.varugrupp = varugrupp  # 分類（如：啤酒、紅酒、白酒）
-        self.producent = producent  # 生產商
-        self.ursprunglandnamn = ursprunglandnamn  # 產地
-        self.alkoholhalt = alkoholhalt  # 酒精濃度
-        self.prisinklmoms = prisinklmoms  # 價格（含稅）
-        self.forpackning = forpackning  # 包裝方式（瓶裝/罐裝）
+        self.nr = nr  # number ID I think
+        self.namn = namn  #  name
+        self.varugrupp = varugrupp  # catalogue（EX: Beer or wine or wiskey）
+        self.producent = producent  # producer
+        self.ursprunglandnamn = ursprunglandnamn  # Origin
+        self.alkoholhalt = alkoholhalt  # alc.
+        self.prisinklmoms = prisinklmoms  # prices
+        self.forpackning = forpackning  # packaging
 
         if self.nr:
             self.image = f"images/{self.nr}.png"  

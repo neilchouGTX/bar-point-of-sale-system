@@ -39,7 +39,7 @@ class Controller():
         theData=self.beerModel.getDataByCategory(varugrupp)
         return theData
     def refreshOrderView(self, category):
-        """讓 OrderViewNew 重新加載新分類的數據"""
+        # make orderViewNew refresh
         order_view = self.view.frames.get("OrderViewNew")
         if order_view:
             order_view.refresh(category)

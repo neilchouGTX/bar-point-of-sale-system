@@ -18,7 +18,7 @@ class HomeView(Frame):
         # self.main_frame = tk.Frame(self, bg="#10081a", width=1250, height=650)
         # self.main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
         
-        # 在主畫面中的 Order Now 與 VIP 區塊
+        # In the main screen, the Order Now and VIP blocks
         self.order_btn = tk.Button(self, text="Order Now", **self.button_style, command=lambda: self.changePage("OrderView"))
         self.order_btn.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
