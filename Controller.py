@@ -1,6 +1,6 @@
-from Login_view import *
+from views.Login_view import *
 from Model import *
-from Order_view import*
+from views.Order_view import*
 from Base_view import *
 class Controller():
     def __init__(self):

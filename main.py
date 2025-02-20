@@ -1,5 +1,5 @@
 import tkinter as tk
-from Login_view import * 
+from views.Login_view import * 
 from Controller import*
 
 controller=Controller()

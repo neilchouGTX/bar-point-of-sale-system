@@ -1,11 +1,11 @@
 import json
 import tkinter as tk
 from tkinter import font
-from Order_view import *
-from Login_view import *
-from Upper_view import *
-from Home_view import *
-from Order_viewNew import *
+from views.Order_view import *
+from views.Login_view import *
+from views.Upper_view import *
+from views.Home_view import *
+from views.Order_viewNew import *
 # Base View - For managing multiple pages
 
 class BaseView(tk.Tk):
