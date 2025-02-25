@@ -2,15 +2,16 @@ from tkinter import *
 import tkinter as tk
 from tkinter import font
 from PIL import Image, ImageTk
+import os, sys
 from styles.style_config import *
 import os
 
-class OrderViewNew(Frame):
+class CartView(Frame):
     def __init__(self, root, controller):
         super().__init__(root)
         self.controller = controller
         self.configure(bg="white")
-        
+
         self.grid_rowconfigure(0, weight=0)  
         self.grid_rowconfigure(1, weight=1)  
         self.grid_columnconfigure(0, weight=1)
@@ -33,35 +34,30 @@ class OrderViewNew(Frame):
         # for category in ["Vitt vin", "Okryddad sprit"]:
         VittVin_btn = tk.Button(
             self.submenu_frame, 
-            text="Vitt vin",
+            text="Back",
             **self.button_style,
-            command=lambda: self.refresh("Vitt vin")
+            command=lambda: self.controller.view.show_frame("OrderViewNew") 
         )
         VittVin_btn.pack(side="left", padx=10, pady=5)
 
-        OkryddadSprit_btn = tk.Button(
-            self.submenu_frame, 
-            text="Okryddad sprit", 
-            **self.button_style,
-            command=lambda: self.refresh("Okryddad sprit")
+        self.total_price_label = tk.Label(
+            self.submenu_frame,
+            text="Total: 0 kr",
+            fg="white",
+            bg="#291802",
+            font=self.custom_font
         )
-        OkryddadSprit_btn.pack(side="left", padx=10, pady=5)
-
-        Cognac_btn = tk.Button(
-            self.submenu_frame, 
-            text="Cognac",
-            **self.button_style,
-            command=lambda: self.refresh("Cognac")
-        )
-        Cognac_btn.pack(side="left", padx=10, pady=5)
+        self.total_price_label.pack(side="right", padx=10, pady=5)
 
         shopping_cart_btn = tk.Button(
             self.submenu_frame,
-            text="Shopping Cart",
+            text="Checkout",
             **self.button_style,
-            command=lambda: (self.controller.view.show_frame("CartView"), self.controller.cart_refresh())
+            command=lambda: self.controller.view.show_frame("OrderView")
         )
         shopping_cart_btn.pack(side="right", padx=10, pady=5)
+
+        
 
     def create_main_area(self):
         # main scrollable area
@@ -99,25 +95,24 @@ class OrderViewNew(Frame):
             widget.destroy()
 
         # Get drinks data from controller
-        drinks_data = self.controller.getMenuData(self.category)
-        row, col = 0, 0
+        drinks_data = self.controller.get_cart_data()
+
+        row = 0
         items_count = 0
         for drink in drinks_data:
             card = DrinkCard(self.inner_frame, drink, self.controller)
-            card.grid(row=row, column=col, padx=10, pady=10)
-            col += 1
-            if col > 4:  # Maximum 5 cards in a row
-                col = 0
-                row += 1
+            card.grid(row = row, column =  0, padx = 10, pady = 10)
+            row += 1
             items_count += 1
-            if items_count > 20:
+            if items_count > 100:
                 break
+    def update_all_total_price(self):
+        total_price = sum(float(drink.prisinklmoms) * self.controller.get_cart_quantity(drink) for drink in self.controller.get_cart_data())
+        self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
 
-
-    def refresh(self, new_category):
-        """ Switch category and reload data """
-        self.category = new_category
+    def refresh(self):
         self.load_drinks()
+        self.update_all_total_price()
 
 
 class DrinkCard(tk.Frame):
@@ -125,7 +120,7 @@ class DrinkCard(tk.Frame):
         super().__init__(parent, bg="#B3E5FC", bd=2, relief="solid")
         self.controller = controller
         self.drink_data = drink_data
-        self.quantity = self.controller.get_cart_quantity(self.drink_data)  # number of drinks in cart
+        self.quantity = self.controller.get_cart_quantity(self.drink_data)
 
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style2(self)
@@ -134,33 +129,37 @@ class DrinkCard(tk.Frame):
         img_path = "images/hei.jpg"  
         if os.path.exists(img_path):  
             img = Image.open(img_path)
-            img = img.resize((180, 180), Image.Resampling.LANCZOS)  # change size to fit card
+            img = img.resize((100, 100), Image.Resampling.LANCZOS)
             self.image = ImageTk.PhotoImage(img)
         else:
             self.image = None 
 
-        # image Label
-        self.image_label = tk.Label(self, image=self.image, bg="#B3E5FC")
-        self.image_label.pack(pady=5)
+        # Main layout frame
+        self.main_frame = tk.Frame(self, bg="#B3E5FC")
+        self.main_frame.pack(fill="x", padx=10, pady=5)
 
-        # alcohol name Label
+        # Image Label (Left side)
+        self.image_label = tk.Label(self.main_frame, image=self.image, bg="#B3E5FC")
+        self.image_label.pack(side="left", padx=10)
+
+        # Info Frame (Middle section)
+        self.info_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
+        self.info_frame.pack(side="left", padx=10, expand=True)
+        
         self.info_label = tk.Label(
-            self,
+            self.info_frame,
             text=f"Name: {drink_data.namn}\n"
-                 f"Producer: {drink_data.producent}\n"
-                 f"Country: {drink_data.ursprunglandnamn}\n"
-                 f"Type: {drink_data.varugrupp}\n"
-                 f"Alc.: {drink_data.alkoholhalt}\n"
-                 f"Packaging: {drink_data.forpackning}\n"
                  f"Price: {drink_data.prisinklmoms} kr",
             justify="left",
             bg="#B3E5FC"
         )
-        self.info_label.pack(pady=5)
+        self.info_label.pack(anchor="w")
 
-        # Quantity adjustment area
-        self.quantity_frame = tk.Frame(self, bg="#B3E5FC")
-        self.quantity_frame.pack(pady=5)
+
+
+        # Quantity adjustment area (Far right)
+        self.quantity_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
+        self.quantity_frame.pack(side="left", padx=10)
 
         self.minus_btn = tk.Button(self.quantity_frame, text="-", **self.button_style, command=self.decrease_quantity, width=3)
         self.minus_btn.grid(row=0, column=0, padx=5)
@@ -171,15 +170,36 @@ class DrinkCard(tk.Frame):
         self.plus_btn = tk.Button(self.quantity_frame, text="+", **self.button_style, command=self.increase_quantity, width=3)
         self.plus_btn.grid(row=0, column=2, padx=5)
 
+        # Quantity and total price frame (Right side)
+        self.total_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
+        self.total_frame.pack(side="left", padx=10)
+
+        self.total_price_label = tk.Label(
+            self.total_frame,
+            text=f"Total: {float(drink_data.prisinklmoms) * self.quantity:.2f} kr",
+            bg="#B3E5FC"
+        )
+        self.total_price_label.pack()
+
     def increase_quantity(self):
-        self.quantity = self.controller.get_cart_quantity(self.drink_data)
         self.quantity += 1
         self.quantity_label.config(text=str(self.quantity))
         self.controller.add_drink_to_cart(self.drink_data)
+        self.update_total_price()
+        self.controller.cart_update_all_total_price()
 
     def decrease_quantity(self):
-        self.quantity = self.controller.get_cart_quantity(self.drink_data)
         if self.quantity > 0:
             self.quantity -= 1
             self.quantity_label.config(text=str(self.quantity))
             self.controller.remove_drink_to_cart(self.drink_data)
+            self.update_total_price()
+            self.controller.cart_update_all_total_price()
+        if self.quantity == 0:
+            self.controller.remove_drink_to_cart(self.drink_data)
+            self.destroy()
+
+    def update_total_price(self):
+        total_price = float(self.drink_data.prisinklmoms) * self.quantity
+        self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
+    
