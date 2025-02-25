@@ -17,7 +17,7 @@ class BaseView(tk.Tk):
         self.configure(bg="#211402")
         self.geometry("1366x768")
 
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1, minsize=30)
         self.grid_rowconfigure(1, weight=9)
         self.grid_columnconfigure(0, weight=1)
         

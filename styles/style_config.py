@@ -10,7 +10,7 @@ def get_button_style(root):
     custom_font = get_custom_font(root)
     return {
         "padx": 15,
-        "pady": 5,
+        "pady": 7,
         "bd": 0,
         "fg": "white",
         "bg": "#38042c",

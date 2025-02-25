@@ -56,6 +56,14 @@ class OrderViewNew(Frame):
         )
         Cognac_btn.pack(side="left", padx=10, pady=5)
 
+        shopping_cart_btn = tk.Button(
+            self.submenu_frame,
+            text="Shopping Cart",
+            **self.button_style,
+            command=lambda: self.controller.show_frame("OrderView")
+        )
+        shopping_cart_btn.pack(side="right", padx=10, pady=5)
+
     def create_main_area(self):
         # main scrollable area
         self.canvas = tk.Canvas(self, bg="white")
@@ -100,7 +108,7 @@ class OrderViewNew(Frame):
                 col = 0
                 row += 1
             items_count += 1
-            if items_count > 50:
+            if items_count > 20:
                 break
 
 

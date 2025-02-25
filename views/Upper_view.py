@@ -20,9 +20,15 @@ class UpperView(Frame):
 
         self.upper_my_orders_btn = tk.Button(self, text="My orders", **self.button_style, command=lambda: self.changePage("OrderViewNew"))
         self.upper_my_orders_btn.place(x=100, y=8)
+
+        self.upper_staff_view_btn = tk.Button(self, text="Staff", **self.button_style, command=lambda: self.changePage("StaffView"))
+        self.upper_staff_view_btn.place(x=220, y=8)
         
         self.upper_login_top_btn = tk.Button(self, text="Login", **self.button_style, command=lambda: self.changePage("LoginView"))
         self.upper_login_top_btn.place(x=1100, y=8)
+
+        
+
         
         self.selected_var = tk.StringVar(value = "English")
         self.combo = ttk.Combobox(self, textvariable=self.selected_var, values=["English", "Svenska", "中文"])

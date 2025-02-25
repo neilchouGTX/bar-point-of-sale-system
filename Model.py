@@ -144,4 +144,7 @@ class StockModel:
         return total, details, page, total_pages
 
 
-stockModel = StockModel()
+# stockModel = StockModel()
+
+
+
