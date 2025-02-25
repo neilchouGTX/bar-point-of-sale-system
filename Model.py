@@ -22,8 +22,9 @@ class UsersModel():
 
 class BeerStaticData():
     """用來儲存單個酒品的資訊"""
-    def __init__(self, nr=None, namn=None, varugrupp=None, producent=None, ursprunglandnamn=None, alkoholhalt=None, prisinklmoms=None, forpackning=None):
+    def __init__(self, nr=None, artikelid=None, namn=None, varugrupp=None, producent=None, ursprunglandnamn=None, alkoholhalt=None, prisinklmoms=None, forpackning=None):
         self.nr = nr  # 商品編號
+        self.artikelid = artikelid #another id
         self.namn = namn  # 酒品名稱
         self.varugrupp = varugrupp  # 分類（如：啤酒、紅酒、白酒）
         self.producent = producent  # 生產商
@@ -143,8 +144,64 @@ class StockModel:
         details = "\n".join([f"{item['namn']} (nr: {item['nr']}): {item['total_stock']}" for item in page_items])
         return total, details, page, total_pages
 
+class CartModel:
+    def __init__(self):
+        self.file_path = os.path.join(os.getcwd(), "DBFilesJSON", "dutchman_table_cart.json")
+        self.filename = self.file_path
+        self.cart_data = {}
+        self.load_data()
 
-# stockModel = StockModel()
+    def load_data(self):
+        """讀取本地 JSON，如果檔案不存在就維持空的 cart_data。"""
+        if os.path.exists(self.filename):
+            with open(self.filename, "r", encoding="utf-8") as f:
+                self.cart_data = json.load(f)
+        else:
+            self.cart_data = []
+
+    def save_data(self):
+        """將 cart_data 寫回 JSON 檔。"""
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(self.cart_data, f, indent=4, ensure_ascii=False)
+
+    def add_to_cart(self, drink_data):
+        drink_id = drink_data.nr  # 或 drink_data.nr，看你資料結構
+        
+        # 先檢查購物車裡是否已經存在該項目
+        for item in self.cart_data:
+            if item["nr"] == drink_id:
+                item["quantity"] += 1
+                self.save_data()
+                return
+        
+        # 如果不存在，新增項目
+        new_item = {
+            "nr": drink_id,
+            "namn": drink_data.namn,
+            "prisinklmoms": drink_data.prisinklmoms,
+            "quantity": 1
+        }
+
+        self.cart_data.append(new_item)
+        self.save_data()
+
+    def remove_from_cart(self, drink_data):
+        drink_id = drink_data.nr
+        for item in self.cart_data:
+            if item["nr"] == drink_id:
+                item["quantity"] -= 1
+                if item["quantity"] <= 0:
+                    self.cart_data.remove(item)
+                self.save_data()
+                return
+    def get_quantity(self, drink_data):
+        drink_id = drink_data.nr
+        for item in self.cart_data:
+            if item["nr"] == drink_id:
+                return item["quantity"]
+        return 0
+
+stockModel = StockModel()
 
 
 

@@ -101,7 +101,7 @@ class OrderViewNew(Frame):
         row, col = 0, 0
         items_count = 0
         for drink in drinks_data:
-            card = DrinkCard(self.inner_frame, drink)
+            card = DrinkCard(self.inner_frame, drink, self.controller)
             card.grid(row=row, column=col, padx=10, pady=10)
             col += 1
             if col > 4:  # Maximum 5 cards in a row
@@ -119,11 +119,11 @@ class OrderViewNew(Frame):
 
 
 class DrinkCard(tk.Frame):
-    def __init__(self, parent, drink_data):
+    def __init__(self, parent, drink_data, controller):
         super().__init__(parent, bg="#B3E5FC", bd=2, relief="solid")
-
+        self.controller = controller
         self.drink_data = drink_data
-        self.quantity = 0  # number of drinks in cart
+        self.quantity = self.controller.get_cart_quantity(self.drink_data)  # number of drinks in cart
 
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style2(self)
@@ -163,17 +163,21 @@ class DrinkCard(tk.Frame):
         self.minus_btn = tk.Button(self.quantity_frame, text="-", **self.button_style, command=self.decrease_quantity, width=3)
         self.minus_btn.grid(row=0, column=0, padx=5)
 
-        self.quantity_label = tk.Label(self.quantity_frame, text="0", width=3, bg="white")
+        self.quantity_label = tk.Label(self.quantity_frame, text=str(self.quantity), width=3, bg="white")
         self.quantity_label.grid(row=0, column=1)
 
         self.plus_btn = tk.Button(self.quantity_frame, text="+", **self.button_style, command=self.increase_quantity, width=3)
         self.plus_btn.grid(row=0, column=2, padx=5)
 
     def increase_quantity(self):
+        self.quantity = self.controller.get_cart_quantity(self.drink_data)
         self.quantity += 1
         self.quantity_label.config(text=str(self.quantity))
+        self.controller.add_drink_to_cart(self.drink_data)
 
     def decrease_quantity(self):
+        self.quantity = self.controller.get_cart_quantity(self.drink_data)
         if self.quantity > 0:
             self.quantity -= 1
             self.quantity_label.config(text=str(self.quantity))
+            self.controller.remove_drink_to_cart(self.drink_data)

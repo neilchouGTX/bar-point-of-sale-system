@@ -8,6 +8,7 @@ class Controller():
         ## Model
         self.userModel = UsersModel()
         self.beerModel = BeerModel()
+        self.cartModel = CartModel()
         self.stockModel = stockModel  # Now using the JSON-backed stock model
 
         # For demonstration, initialize a dummy orders list
@@ -155,3 +156,11 @@ class Controller():
 
     def show_staff_page(self):
         self.view.show_frame("StaffView")
+        
+    def get_cart_quantity(self, drink_data):
+        return self.cartModel.get_quantity(drink_data)
+    def add_drink_to_cart(self, drink_data):
+        self.cartModel.add_to_cart(drink_data)
+    def remove_drink_to_cart(self, drink_data):
+        self.cartModel.remove_from_cart(drink_data)
+
