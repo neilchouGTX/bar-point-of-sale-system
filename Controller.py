@@ -10,7 +10,7 @@ class Controller():
         self.beerModel = BeerModel()
         self.cartModel = CartModel()
         self.stockModel = stockModel  # Now using the JSON-backed stock model
-
+        self.menuModel = MenuModel()
         # For demonstration, initialize a dummy orders list
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
 
@@ -164,3 +164,11 @@ class Controller():
     def remove_drink_to_cart(self, drink_data):
         self.cartModel.remove_from_cart(drink_data)
 
+
+
+    def addItemToMenu(self,menuItem):
+        theItem=menuItem
+        self.menuModel.addItem(theItem)
+    
+    def removeItemFromMenu(self,index):
+        self.menuModel.removeItem(index)
