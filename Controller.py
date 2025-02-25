@@ -31,7 +31,7 @@ class Controller():
             self.view.drinks_menu_frame.place(x=100, y=90)
             self.view.drinks_menu_frame.lift()
             self.model.get_drinks_list()
-    
+
     def displayView(self):
         self.view.display()
     
@@ -156,11 +156,22 @@ class Controller():
 
     def show_staff_page(self):
         self.view.show_frame("StaffView")
-        
+
     def get_cart_quantity(self, drink_data):
         return self.cartModel.get_quantity(drink_data)
     def add_drink_to_cart(self, drink_data):
         self.cartModel.add_to_cart(drink_data)
     def remove_drink_to_cart(self, drink_data):
         self.cartModel.remove_from_cart(drink_data)
+
+    def get_cart_data(self):
+        return self.cartModel.get_cart_data()
+    def cart_refresh(self):
+        cart_view = self.view.frames.get("CartView")
+        if cart_view:
+            cart_view.refresh()
+    def cart_update_all_total_price(self):
+        cart_view = self.view.frames.get("CartView")
+        if cart_view:
+            cart_view.update_all_total_price()
 

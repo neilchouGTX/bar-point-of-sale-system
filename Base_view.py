@@ -7,6 +7,7 @@ from views.Upper_view import *
 from views.Home_view import *
 from views.Order_viewNew import *
 from views.Staff_view import *
+from views.Cart_view import *
 
 class BaseView(tk.Tk):
     def __init__(self, controller):
@@ -16,13 +17,14 @@ class BaseView(tk.Tk):
         self.title("Ordering System")
         self.configure(bg="#211402")
         self.geometry("1366x768")
+        self.current_frame = None
 
         self.grid_rowconfigure(0, weight=1, minsize=30)
         self.grid_rowconfigure(1, weight=9)
         self.grid_columnconfigure(0, weight=1)
         
         # Initialize Frame pages
-        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew, StaffView):
+        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew, StaffView, CartView):
             page_name = F.__name__
             frame = F(root=self, controller=self.controller)
             self.frames[page_name] = frame
@@ -35,4 +37,19 @@ class BaseView(tk.Tk):
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
+        self.current_frame = frame
         frame.tkraise()
+        
+        for f in self.frames.values():
+            if hasattr(f, "canvas"):
+                f.canvas.unbind("<MouseWheel>")
+
+        # 只對當前顯示的 Frame 綁定滾輪事件
+        if hasattr(frame, "canvas"):
+            frame.canvas.bind("<MouseWheel>", frame._on_mousewheel)
+    
+    def set_current_frame(self, frame):
+        self.current_frame = frame
+
+    def get_current_frame(self):
+        return self.current_frame
