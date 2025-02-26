@@ -85,3 +85,14 @@ class ReservationView(Frame):
 
         # Closing form after submit button is pressed
         rsv_window.destroy()
+
+    def cancel_reservation(self):
+        rsv_selection = self.tree.selection()
+
+        if not rsv_selection:
+            messagebox.showerror("Error", "No reservation selected")
+            return
+
+        result = tk.messagebox.askyesno("Confirm Cancellation", "Are you sure you want to cancel this reservation?")
+        if result:
+            self.tree.delete(rsv_selection)
