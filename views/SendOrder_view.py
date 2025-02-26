@@ -2,11 +2,10 @@ from tkinter import *
 import tkinter as tk
 from tkinter import font
 from PIL import Image, ImageTk
-import os, sys
-from styles.style_config import *
 import os
+from styles.style_config import *
 
-class CartView(Frame):
+class SendOrderView(Frame):
     def __init__(self, root, controller):
         super().__init__(root)
         self.controller = controller
@@ -16,30 +15,40 @@ class CartView(Frame):
         self.grid_rowconfigure(1, weight=1)  
         self.grid_columnconfigure(0, weight=1)
         self.custom_font = get_custom_font(self)
+        self.custom_send_order_button_style = get_send_order_button_style(self)
         self.button_style = get_button_style2(self)
 
         self.category = "Cognac"  
         self.canvas = None
         self.scroll_y = None
         self.frame = None
-        self.controller.clear_cart()
+        
         self.create_submenu()
         self.create_main_area()
+        self.create_table_selector()
+        self.create_submit_button()
         self.load_drinks()
-        # self.create_ui()
 
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
         self.submenu_frame.grid(row=0, column=0, sticky="ew")
 
-        # for category in ["Vitt vin", "Okryddad sprit"]:
-        VittVin_btn = tk.Button(
+        back_btn = tk.Button(
             self.submenu_frame, 
             text="Back",
             **self.button_style,
-            command=lambda: self.controller.view.show_frame("OrderViewNew") 
+            command=lambda: self.controller.view.show_frame("CartView") 
         )
-        VittVin_btn.pack(side="left", padx=10, pady=5)
+        back_btn.pack(side="left", padx=10, pady=5)
+
+        self.confirmed_label = tk.Label(
+            self.submenu_frame,
+            text="Confirmed Order",
+            fg="white",
+            bg="#291802",
+            font=("Arial", 25, "bold")
+        )
+        self.confirmed_label.pack(side="top", pady=5)
 
         self.total_price_label = tk.Label(
             self.submenu_frame,
@@ -50,25 +59,19 @@ class CartView(Frame):
         )
         self.total_price_label.pack(side="right", padx=10, pady=5)
 
-        shopping_cart_btn = tk.Button(
-            self.submenu_frame,
-            text="Checkout",
-            **self.button_style,
-            command=lambda: (self.controller.view.show_frame("SendOrderView"), self.controller.refreshSendOrderView())
-        )
-        shopping_cart_btn.pack(side="right", padx=10, pady=5)
-
-        
+        # checkout_btn = tk.Button(
+        #     self.submenu_frame,
+        #     text="Checkout",
+        #     **self.button_style,
+        #     command=lambda: self.controller.view.show_frame("SendOrderView")
+        # )
+        # checkout_btn.pack(side="right", padx=10, pady=5)
 
     def create_main_area(self):
-        # main scrollable area
         self.canvas = tk.Canvas(self, bg="white")
         self.scroll_y = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
-        
-        # This frame will be placed in the canvas to display drink cards
         self.inner_frame = tk.Frame(self.canvas, bg="white")
 
-        # Setting Canvas
         self.inner_frame.bind(
             "<Configure>", 
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -76,37 +79,54 @@ class CartView(Frame):
         self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scroll_y.set)
 
-        # Use grid to place canvas and scrollbar
         self.canvas.grid(row=1, column=0, sticky="nsew")
         self.scroll_y.grid(row=1, column=1, sticky="ns")
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 
+    def create_table_selector(self):
+        self.table_selector_frame = tk.Frame(self, bg="white")
+        self.table_selector_frame.grid(row=2, column=0, pady=10)
+        
+        tk.Label(self.table_selector_frame, text="Select Table:", font=self.custom_font, bg="white").pack(side="left", padx=5)
+        
+        self.table_var = tk.StringVar(value="Table 1")
+        self.table_dropdown = tk.OptionMenu(self.table_selector_frame, self.table_var, *[f"Table {i}" for i in range(1, 11)])
+        self.table_dropdown.config(font=("Arial", 14), width=10)  # Increased size
+        self.table_dropdown.pack(side="left", padx=5)
+
+    def create_submit_button(self):
+        self.submit_btn = tk.Button(
+            self,
+            text="Send Order",
+            **self.custom_send_order_button_style,
+            command=self.submit_order
+        )
+        self.submit_btn.grid(row=3, column=0, pady=10)
+
+    def submit_order(self):
+        selected_table = self.table_var.get()
+        table_number = int(selected_table.split(" ")[1])  # 取得數字部分
+        self.controller.send_order(table_number)
+        print(f"Order submitted for {selected_table}")  # Replace with actual order handling logic
+
     def _on_mousewheel(self, event):
-        if self.controller.view.get_current_frame() == self:  # 確保當前 Frame 是顯示的
-                if self.canvas.winfo_exists():
-                    if self.winfo_toplevel().tk.call("tk", "windowingsystem") == "aqua":  # macOS
-                        self.canvas.yview_scroll(int(-1 * (event.delta / 3)), "units")
-                    else:  # Windows/Linux
-                        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        if self.controller.view.get_current_frame() == self:
+            if self.canvas.winfo_exists():
+                if self.winfo_toplevel().tk.call("tk", "windowingsystem") == "aqua":  # macOS
+                    self.canvas.yview_scroll(int(-1 * (event.delta / 3)), "units")
+                else:  # Windows/Linux
+                    self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def load_drinks(self):
-        """ loading drinks data into inner_frame """
-        # Clear existing cards
         for widget in self.inner_frame.winfo_children():
             widget.destroy()
-
-        # Get drinks data from controller
         drinks_data = self.controller.get_cart_data()
-
         row = 0
-        items_count = 0
         for drink in drinks_data:
             card = DrinkCard(self.inner_frame, drink, self.controller)
-            card.grid(row = row, column =  0, padx = 10, pady = 10)
+            card.grid(row=row, column=0, padx=10, pady=10)
             row += 1
-            items_count += 1
-            if items_count > 100:
-                break
+
     def update_all_total_price(self):
         total_price = sum(float(drink.prisinklmoms) * self.controller.get_cart_quantity(drink) for drink in self.controller.get_cart_data())
         self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
@@ -157,19 +177,12 @@ class DrinkCard(tk.Frame):
         self.info_label.pack(anchor="w")
 
 
-
         # Quantity adjustment area (Far right)
         self.quantity_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
         self.quantity_frame.pack(side="left", padx=10)
 
-        self.minus_btn = tk.Button(self.quantity_frame, text="-", **self.button_style, command=self.decrease_quantity, width=3)
-        self.minus_btn.grid(row=0, column=0, padx=5)
-
         self.quantity_label = tk.Label(self.quantity_frame, text=str(self.quantity), width=3, bg="white")
         self.quantity_label.grid(row=0, column=1)
-
-        self.plus_btn = tk.Button(self.quantity_frame, text="+", **self.button_style, command=self.increase_quantity, width=3)
-        self.plus_btn.grid(row=0, column=2, padx=5)
 
         # Quantity and total price frame (Right side)
         self.total_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
@@ -182,25 +195,6 @@ class DrinkCard(tk.Frame):
         )
         self.total_price_label.pack()
 
-    def increase_quantity(self):
-        self.quantity += 1
-        self.quantity_label.config(text=str(self.quantity))
-        self.controller.add_drink_to_cart(self.drink_data)
-        self.update_total_price()
-        self.controller.cart_update_all_total_price()
-
-    def decrease_quantity(self):
-        if self.quantity > 0:
-            self.quantity -= 1
-            self.quantity_label.config(text=str(self.quantity))
-            self.controller.remove_drink_to_cart(self.drink_data)
-            self.update_total_price()
-            self.controller.cart_update_all_total_price()
-        if self.quantity == 0:
-            self.controller.remove_drink_to_cart(self.drink_data)
-            self.destroy()
-
     def update_total_price(self):
         total_price = float(self.drink_data.prisinklmoms) * self.quantity
         self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
-    
