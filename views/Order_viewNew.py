@@ -99,7 +99,7 @@ class OrderViewNew(Frame):
             widget.destroy()
 
         # Get drinks data from controller
-        drinks_data = self.controller.getMenuData(self.category)
+        drinks_data = self.controller.getBeerDataFromMenu()
         row, col = 0, 0
         items_count = 0
         for drink in drinks_data:
