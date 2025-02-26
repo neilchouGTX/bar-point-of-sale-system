@@ -5,12 +5,17 @@ class LoginView(tk.Frame):
     def __init__(self, root, controller):
         super().__init__(root)
         self.controller = controller
+        self.configure(bg="#A7C7E7")
         self.username_var = tk.StringVar()
         self.password_var = tk.StringVar()
         self.staff_var = tk.IntVar()  # Variable for staff checkbox
+        self.login_type = tk.StringVar(value="Customer")
         self.display()
 
     def display(self):
+        # Login Title
+        self.title = ttk.Label(self, text=f"{self.login_type.get()} Login", font=("Georgia", 24, "bold"))
+
         # username & password
         self.username_lbl = ttk.Label(self, text="Account:")
         self.username_lbl.grid(row=0, column=0)
@@ -33,8 +38,8 @@ class LoginView(tk.Frame):
         log_btn = ttk.Button(self, text="Login", command=self.login)
         log_btn.grid(row=2, column=2)
 
-        guestLog_btn = ttk.Button(self, text="GuestLogin", command=self.guestLogin)
-        guestLog_btn.grid(row=3, column=1)
+        #guestLog_btn = ttk.Button(self, text="GuestLogin", command=self.guestLogin)
+        #guestLog_btn.grid(row=3, column=1)
 
     def login(self):
         theUsername = self.username_var.get()

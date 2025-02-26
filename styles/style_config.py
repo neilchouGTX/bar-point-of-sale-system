@@ -4,7 +4,7 @@ from tkinter import font
 #this file is for storing the styles of the buttons and fonts
 
 def get_custom_font(root):
-    return font.Font(root=root, family="Helvetica", size=12, weight="bold")
+    return font.Font(root=root, family="Georgia", size=12, weight="bold")
 
 def get_button_style(root):
     custom_font = get_custom_font(root)
@@ -12,10 +12,10 @@ def get_button_style(root):
         "padx": 15,
         "pady": 7,
         "bd": 0,
-        "fg": "white",
-        "bg": "#38042c",
-        "activebackground": "#26031e",
-        "activeforeground": "white",
+        "fg": "black",
+        "bg": "white",
+        "activebackground": "gray",
+        "activeforeground": "black",
         "font": custom_font,
         "relief": "flat"
     }
