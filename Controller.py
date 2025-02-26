@@ -9,6 +9,7 @@ class Controller():
         self.userModel = UsersModel()
         self.beerModel = BeerModel()
         self.cartModel = CartModel()
+        self.orderModel = OrderModel()
         self.stockModel = stockModel  # Now using the JSON-backed stock model
 
         # For demonstration, initialize a dummy orders list
@@ -55,6 +56,11 @@ class Controller():
         order_view = self.view.frames.get("OrderViewNew")
         if order_view:
             order_view.refresh(category)
+
+    def refreshSendOrderView(self):
+        send_order_view = self.view.frames.get("SendOrderView")
+        if send_order_view:
+            send_order_view.refresh()
     
     def updateStockData(self, beverage_id, amount):
         """Update stock data for a given beverage in the JSON file"""
@@ -164,6 +170,8 @@ class Controller():
     def remove_drink_to_cart(self, drink_data):
         self.cartModel.remove_from_cart(drink_data)
 
+    def clear_cart(self):
+        self.cartModel.clear_cart()
     def get_cart_data(self):
         return self.cartModel.get_cart_data()
     def cart_refresh(self):
@@ -175,3 +183,33 @@ class Controller():
         if cart_view:
             cart_view.update_all_total_price()
 
+    def send_order(self, table_number):
+        # 取得購物車資料
+        cart_data = self.cartModel.get_cart_data()
+        if not cart_data:
+            print("Cart is empty!")
+            return
+        self.orderModel.add_order(table_number, cart_data)
+        self.cartModel.clear_cart()
+        self.cart_refresh()
+        self.refreshSendOrderView()
+
+
+    def addItemToMenu(self,menuItem):
+        theItem=menuItem
+        self.menuModel.addItem(theItem)
+    
+    def removeItemFromMenu(self,index):
+        self.menuModel.removeItem(index)
+    
+    def getBeerDataFromMenu(self,):
+        menuData=self.menuModel.getData()
+        ids=[]
+        for theData in menuData:
+            ids.append(theData.id.strip())
+        
+        print(ids)
+        
+        theBeerStaticData=self.beerModel.getDataByIds(ids)
+        print(theBeerStaticData)
+        return theBeerStaticData

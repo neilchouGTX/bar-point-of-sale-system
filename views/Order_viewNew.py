@@ -116,7 +116,8 @@ class OrderViewNew(Frame):
 
     def refresh(self, new_category):
         """ Switch category and reload data """
-        self.category = new_category
+        if(new_category != None):
+            self.category = new_category
         self.load_drinks()
 
 

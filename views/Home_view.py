@@ -22,6 +22,8 @@ class HomeView(Frame):
         self.order_btn = tk.Button(self, text="Order Now", **self.button_style, command=lambda: self.changePage("OrderView"))
         self.order_btn.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
+        self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda:( self.controller.refreshOrderView(None),self.changePage("OrderViewNew")))
+        self.order_btn.pack(side="top", padx=10, pady=10)
         self.order_btn = tk.Button(self, text="Order Now NEW!!!", **self.button_style, command=lambda: self.changePage("OrderViewNew"))
         self.order_btn.place(relx=0.7, rely=0.4, anchor=tk.CENTER)
         

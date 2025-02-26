@@ -159,6 +159,11 @@ class CartModel:
         self.cart_data = []
         self.load_data()
 
+    def clear_cart(self):
+        """清空購物車"""
+        self.cart_data = []
+        self.save_data()
+
     def load_data(self):
         """讀取本地 JSON，如果檔案不存在就維持空的 cart_data。"""
         if os.path.exists(self.file_path):
@@ -209,3 +214,112 @@ class CartModel:
 
 
 
+class MenuItem:
+    def __init__(self,id,name):
+        self.id=id
+        self.name=name
+        #self.price=price
+class MenuModel:
+    def __init__(self):
+        self.data=[]
+        folder_path = os.getcwd()  
+        self.db_path=os.path.join(folder_path, "DBFilesJson", "dutchman_menu.json")
+
+        self.loadData()
+        self.staticData=[]
+        self.jsonToObject()
+    def loadData(self):
+        if os.path.exists(self.db_path):
+            with open(self.db_path, "r", encoding="utf-8") as file:
+                self.data = json.load(file)
+        else:
+            with open(self.db_path, "w", encoding="utf-8") as file:
+                json.dump(self.data, file, ensure_ascii=False, indent=4)
+
+    def saveData(self,):
+        with open(self.db_path, "w", encoding="utf-8") as file:
+            json.dump(self.staticData, file, ensure_ascii=False, indent=4,default=self.custom_encoder)
+    
+    def custom_encoder(self,obj):
+        if hasattr(obj, "__dict__"):
+            return obj.__dict__
+        return str(obj)
+    
+    def jsonToObject(self):
+        for theData in self.data:
+            theStaticData = MenuItem(1,2)
+            for key, value in theData.items():
+                if hasattr(theStaticData, key):
+                    setattr(theStaticData, key, value)
+            self.staticData.append(theStaticData)
+    def getData(self):
+        return self.staticData
+    def addItem(self,menuData):
+        self.staticData.append(menuData)
+        self.saveData()
+    def removeItem(self,index):
+        self.staticData.pop(index)
+        self.saveData()
+
+class OrderItem:
+    def __init__(self, item_id, amount, price):
+        self.id = item_id
+        self.amount = amount
+        self.price = price
+class Order:
+    def __init__(self, table_number, orderItems,totalPrice):
+        self.tableNumber = table_number
+        self.totalPrice = totalPrice
+        self.orderItems = orderItems
+
+
+class OrderModel:
+    def __init__(self):
+        self.data=[]
+        folder_path = os.getcwd()  
+        self.db_path=os.path.join(folder_path, "DBFilesJson", "dutchman_order.json")
+
+        self.loadData()
+        self.staticData=[]
+        self.jsonToObject()
+        self.saveData()
+    def loadData(self):
+        if os.path.exists(self.db_path):
+            with open(self.db_path, "r", encoding="utf-8") as file:
+                self.data = json.load(file)
+        else:
+            with open(self.db_path, "w", encoding="utf-8") as file:
+                json.dump(self.data, file, ensure_ascii=False, indent=4)
+    
+    def saveData(self):
+        """
+        orders = [
+            Order(5, [OrderItem(101, 2, 50.0), OrderItem(102, 1, 30.0)],1000),
+            Order(3, [OrderItem(201, 1, 25.0), OrderItem(202, 4, 15.0)],1000),
+            Order(7, [OrderItem(301, 3, 40.0)],10000)]
+        """
+        # 轉換所有訂單為字典列表
+        orders_data = [order.__dict__ for order in self.staticData]
+
+        # 進一步轉換 Item 為字典
+        for order in orders_data:
+            order["orderItems"] = [item.__dict__ for item in order["orderItems"]]
+
+        # 存入 JSON 檔案
+        with open(self.db_path, "w", encoding="utf-8") as file:
+            json.dump(orders_data, file, ensure_ascii=False, indent=4)
+        
+    def jsonToObject(self):
+        self.staticData = [
+            Order(
+                table_number=order["tableNumber"],
+                orderItems=[OrderItem(item["id"], item["amount"], item["price"]) for item in order["orderItems"]],
+                totalPrice=order["totalPrice"]
+            )
+            for order in self.data
+        ]
+stockModel = StockModel()
+#menuModel=MenuModel()
+
+orderModel=OrderModel()
+print(orderModel.staticData[0].totalPrice)
