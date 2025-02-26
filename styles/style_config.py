@@ -6,6 +6,9 @@ from tkinter import font
 def get_custom_font(root):
     return font.Font(root=root, family="Georgia", size=12, weight="bold")
 
+def get_custom_font_bigger(root):
+    return font.Font(root=root, family="Georgia", size=18, weight="bold")
+
 def get_button_style(root):
     custom_font = get_custom_font(root)
     return {
@@ -25,6 +28,20 @@ def get_button_style2(root):
     return {
         "padx": 15,
         "pady": 5,
+        "bd": 0,
+        "fg": "white",
+        "bg": "#520a07",
+        "activebackground": "#400705",
+        "activeforeground": "white",
+        "font": custom_font,
+        "relief": "flat"
+    }
+
+def get_send_order_button_style(root):
+    custom_font = get_custom_font_bigger(root)
+    return {
+        "padx": 20,
+        "pady": 10,
         "bd": 0,
         "fg": "white",
         "bg": "#520a07",

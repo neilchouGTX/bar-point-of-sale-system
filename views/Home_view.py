@@ -34,7 +34,8 @@ class HomeView(Frame):
         self.order_btn = tk.Button(login_btns, text="Order Now", **self.button_style, width=10, command=lambda: self.changePage("OrderView"))
         self.order_btn.pack(side="top", padx=10, pady=10)
 
-        self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: self.changePage("OrderViewNew"))
+        self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
+
         self.order_btn.pack(side="top", padx=10, pady=10)
         
         self.login_btn = tk.Button(login_btns, text="Staff Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))

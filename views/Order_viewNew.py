@@ -99,7 +99,6 @@ class OrderViewNew(Frame):
             widget.destroy()
 
         # Get drinks data from controller
-        #drinks_data = self.controller.getMenuData(self.category)
         drinks_data = self.controller.getBeerDataFromMenu()
         row, col = 0, 0
         items_count = 0
@@ -117,7 +116,8 @@ class OrderViewNew(Frame):
 
     def refresh(self, new_category):
         """ Switch category and reload data """
-        self.category = new_category
+        if(new_category != None):
+            self.category = new_category
         self.load_drinks()
 
 
