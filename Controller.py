@@ -11,7 +11,7 @@ class Controller():
         self.cartModel = CartModel()
         self.orderModel = OrderModel()
         self.stockModel = stockModel  # Now using the JSON-backed stock model
-
+        self.menuModel = MenuModel()
         # For demonstration, initialize a dummy orders list
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
 
