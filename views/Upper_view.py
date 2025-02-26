@@ -17,26 +17,28 @@ class UpperView(Frame):
     def display(self):
 
         self.upper_home_btn = tk.Button(self, text="Home", **self.button_style, command=lambda: self.changePage("HomeView"))
-        self.upper_home_btn.pack(side="left", padx=15, pady=10)
+        self.upper_home_btn.grid(row=0, column=0, padx=10, pady=10)
 
         self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: self.changePage("OrderViewNew"))
-        self.upper_my_orders_btn.pack(side="left", padx=15, pady=10)
+        self.upper_my_orders_btn.grid(row=0, column=1, padx=10, pady=10)
 
         self.upper_staff_view_btn = tk.Button(self, text="Reservations", **self.button_style, command=lambda: self.changePage("ReservationView"))
-        self.upper_staff_view_btn.pack(side="left", padx=15, pady=10)
-
+        self.upper_staff_view_btn.grid(row=0, column=2, padx=10, pady=10)
         # Title
-        title_label = Label(self, text="The Flying Dutchman", font=("Georgia", 24, "bold"),
+        title_label = Label(self, text="The Flying Dutchman", font=("Georgia", 30, "bold"),
                             bg="#A7C7E7", fg="#000435")
-        title_label.pack(side="left", expand=True, padx=100, pady=10)
+        title_label.grid(row=0, column=3, sticky="news", padx=10, pady=10)
+
+        # Adjusting grid to center title
+        self.columnconfigure(3, weight=1)
 
         self.selected_var = tk.StringVar(value="English")
         self.combo = ttk.Combobox(self, textvariable=self.selected_var, values=["English", "Svenska", "中文"])
-        self.combo.pack(side="right", padx=15, pady=10)
+        self.combo.grid(row=0, column=4, sticky="news", padx=10, pady=10)
         self.combo.current(0)
         
         self.upper_login_top_btn = tk.Button(self, text="Login", **self.button_style, command=lambda: self.changePage("LoginView"))
-        self.upper_login_top_btn.pack(side="right", padx=15, pady=10)
+        self.upper_login_top_btn.grid(row=0, column=5, padx=10, pady=10)
 
     def changePage(self, page_name):
         self.controller.view.show_frame(page_name)

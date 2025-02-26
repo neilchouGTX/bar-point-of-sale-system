@@ -16,15 +16,15 @@ class HomeView(Frame):
         self.display()
 
     def display(self):
-        # self.main_frame = tk.Frame(self, bg="#10081a", width=1250, height=650)
-        # self.main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.main_frame = tk.Frame(self, bg="#A7C7E7", width=1250, height=650)
+        self.main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # Flying Dutchman Image
         self.ship_image = Image.open("images/TheFlyingDutchman.png")
         self.ship_image = self.ship_image.resize((400,300))
         self.ship_image = ImageTk.PhotoImage(self.ship_image)
         ship_image_label = Label(self, image=self.ship_image, bg="#A7C7E7")
-        ship_image_label.pack(side="top")
+        ship_image_label.pack(pady=20)
 
         # Placing buttons below image
         login_btns = Frame(self, bg="#A7C7E7")
