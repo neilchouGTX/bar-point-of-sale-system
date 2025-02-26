@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 from styles.style_config import *
-from datetime import datetime
+from tkinter import messagebox
+import json
 
 class ReservationView(Frame):
     def __init__(self, root, controller):
@@ -38,37 +39,41 @@ class ReservationView(Frame):
         add_rsv_btn = Button(btn_frame, text="Add Reservation", **self.button_style, width=10, command=self.reservation_form)
         add_rsv_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        cancel_rsv_btn = Button(btn_frame, text="Cancel Reservation", **self.button_style, width=10)
+        cancel_rsv_btn = Button(btn_frame, text="Cancel Reservation", **self.button_style, width=10, command=self.cancel_reservation)
         cancel_rsv_btn.grid(row=0, column=1, padx=10, pady=10)
 
     def reservation_form(self):
         rsv_window = Toplevel(self)
         rsv_window.title("New Reservation")
-        rsv_window.geometry("300x300")
+        rsv_window.geometry("375x250")
 
         # Name entry
-        Label(rsv_window, text="Name:", font=self.custom_font).pack()
+        name_label = Label(rsv_window, text="Name:", font=self.custom_font)
+        name_label.grid(row=0, column=0, sticky="e", padx=10, pady=10)
         name_entry = Entry(rsv_window)
-        name_entry.pack()
+        name_entry.grid(row=0, column=1, padx=10, pady=10)
 
         # Table entry
-        Label(rsv_window, text="Table:", font=self.custom_font).pack()
+        table_label = Label(rsv_window, text="Table:", font=self.custom_font)
+        table_label.grid(row=1, column=0, sticky="e", padx=10, pady=10)
         table_entry = Entry(rsv_window)
-        table_entry.pack()
+        table_entry.grid(row=1, column=1, padx=10, pady=10)
 
         # Date Entry
-        Label(rsv_window, text="Date (DD-MM-YYYY):", font=self.custom_font).pack()
+        date_label = Label(rsv_window, text="Date (DD-MM-YYYY):", font=self.custom_font)
+        date_label.grid(row=2, column=0, sticky="e", padx=10, pady=10)
         date_entry = Entry(rsv_window)
-        date_entry.pack()
+        date_entry.grid(row=2, column=1, padx=10, pady=10)
 
         # Time Entry
-        Label(rsv_window, text="Time (HH:MM):", font=self.custom_font).pack()
+        time_label = Label(rsv_window, text="Time (HH:MM):", font=self.custom_font)
+        time_label.grid(row=3, column=0, sticky="e", padx=10, pady=10)
         time_entry = Entry(rsv_window)
-        time_entry.pack()
+        time_entry.grid(row=3, column=1, padx=10, pady=10)
 
         # Submit button
         submit_btn = Button(rsv_window, text="Submit", **self.button_style, command=lambda: self.add_reservation(name_entry, table_entry, date_entry, time_entry, rsv_window))
-        submit_btn.pack()
+        submit_btn.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
 
     def add_reservation(self, name_entry, table_entry, date_entry, time_entry, rsv_window):
         name = name_entry.get()
