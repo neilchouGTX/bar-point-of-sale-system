@@ -238,9 +238,7 @@ class MenuModel:
         if os.path.exists(self.db_path):
             with open(self.db_path, "r", encoding="utf-8") as file:
                 self.data = json.load(file)
-                print("檔案內容：", self.data)
         else:
-            print("檔案不存在，建立新檔案...")
             with open(self.db_path, "w", encoding="utf-8") as file:
                 json.dump(self.data, file, ensure_ascii=False, indent=4)
 
@@ -269,6 +267,65 @@ class MenuModel:
         self.staticData.pop(index)
         self.saveData()
 
+class OrderItem:
+    def __init__(self, item_id, amount, price):
+        self.id = item_id
+        self.amount = amount
+        self.price = price
+class Order:
+    def __init__(self, table_number, orderItems,totalPrice):
+        self.tableNumber = table_number
+        self.totalPrice = totalPrice
+        self.orderItems = orderItems
 
+
+class OrderModel:
+    def __init__(self):
+        self.data=[]
+        folder_path = os.getcwd()  
+        self.db_path=os.path.join(folder_path, "DBFilesJson", "dutchman_order.json")
+
+        self.loadData()
+        self.staticData=[]
+        self.jsonToObject()
+        self.saveData()
+    def loadData(self):
+        if os.path.exists(self.db_path):
+            with open(self.db_path, "r", encoding="utf-8") as file:
+                self.data = json.load(file)
+        else:
+            with open(self.db_path, "w", encoding="utf-8") as file:
+                json.dump(self.data, file, ensure_ascii=False, indent=4)
+    
+    def saveData(self):
+        """
+        orders = [
+            Order(5, [OrderItem(101, 2, 50.0), OrderItem(102, 1, 30.0)],1000),
+            Order(3, [OrderItem(201, 1, 25.0), OrderItem(202, 4, 15.0)],1000),
+            Order(7, [OrderItem(301, 3, 40.0)],10000)]
+        """
+        # 轉換所有訂單為字典列表
+        orders_data = [order.__dict__ for order in self.staticData]
+
+        # 進一步轉換 Item 為字典
+        for order in orders_data:
+            order["orderItems"] = [item.__dict__ for item in order["orderItems"]]
+
+        # 存入 JSON 檔案
+        with open(self.db_path, "w", encoding="utf-8") as file:
+            json.dump(orders_data, file, ensure_ascii=False, indent=4)
+        
+    def jsonToObject(self):
+        self.staticData = [
+            Order(
+                table_number=order["tableNumber"],
+                orderItems=[OrderItem(item["id"], item["amount"], item["price"]) for item in order["orderItems"]],
+                totalPrice=order["totalPrice"]
+            )
+            for order in self.data
+        ]
 stockModel = StockModel()
-menuModel=MenuModel()
+#menuModel=MenuModel()
+
+orderModel=OrderModel()
+print(orderModel.staticData[0].totalPrice)

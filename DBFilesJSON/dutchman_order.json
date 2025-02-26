@@ -1,0 +1,45 @@
+[
+    {
+        "tableNumber": 5,
+        "totalPrice": 1000,
+        "orderItems": [
+            {
+                "id": 101,
+                "amount": 2,
+                "price": 50.0
+            },
+            {
+                "id": 102,
+                "amount": 1,
+                "price": 30.0
+            }
+        ]
+    },
+    {
+        "tableNumber": 3,
+        "totalPrice": 1000,
+        "orderItems": [
+            {
+                "id": 201,
+                "amount": 1,
+                "price": 25.0
+            },
+            {
+                "id": 202,
+                "amount": 4,
+                "price": 15.0
+            }
+        ]
+    },
+    {
+        "tableNumber": 7,
+        "totalPrice": 10000,
+        "orderItems": [
+            {
+                "id": 301,
+                "amount": 3,
+                "price": 40.0
+            }
+        ]
+    }
+]
