@@ -6,7 +6,7 @@ from Base_view import *
 class Controller():
     def __init__(self):
         ## Model
-        self.userModel = UsersModel()
+        self.userModel = UserModel()
         self.beerModel = BeerModel()
         self.cartModel = CartModel()
         self.stockModel = stockModel  # Now using the JSON-backed stock model
@@ -14,8 +14,71 @@ class Controller():
         # For demonstration, initialize a dummy orders list
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
 
+        ## 全局语言设置 / Global language setting
+        self.current_language = "English"
+
         ## View
         self.view = BaseView(self)
+
+        # 建立或取得登录视图，并绑定登录相关事件
+        if 'LoginView' in self.view.frames:
+            self.login_view = self.view.frames['LoginView']
+        else:
+            self.login_view = LoginView(self.view, self)
+            self.view.frames['LoginView'] = self.login_view
+        
+        # 绑定登录、登出事件 / Bind login and logout events
+        self.login_view.bind_login(self.handle_login)
+        self.login_view.bind_logout(self.handle_logout)
+
+        # 绑定 UpperView 里的语言切换控件/ Bind Language change in Upperview.py
+        self.upper_view = UpperView(self.view, self)
+        self.upper_view.combo.bind("<<ComboboxSelected>>", self.handle_language_change)
+    
+
+    def handle_login(self):
+        """
+        處理登入邏輯：取得使用者類型與識別資訊，
+        若輸入有效，則透過 model 執行 login，並更新視圖以顯示登出狀態；
+        否則顯示錯誤訊息。
+        """
+        user_type = self.login_view.get_selected_user_type()
+        identifier = self.login_view.get_identifier_input()
+        if identifier.strip():
+            self.userModel.login(user_type, identifier)
+            self.login_view.show_logout_view(user_type, identifier)
+            if user_type == "Staff":
+                self.show_staff_page()
+            if user_type == "VIP":
+                self.show_VIP_page()
+
+        else:
+            self.login_view.show_error_message("請輸入有效資訊 / Please enter valid information.")
+    
+    def handle_logout(self):
+        """
+        處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面。
+        """
+        self.userModel.logout()
+        self.login_view.show_login_view()
+    
+    def set_language(self, lang_code):
+        """
+        设置全局语言并更新所有视图 / Set global language and update all views
+        """
+        self.current_language = lang_code
+
+        # 更新所有已初始化的视图 / Update all initialized views
+        for frame in self.view.frames.values():
+            if hasattr(frame, "update_language"):
+                frame.update_language(lang_code)
+    
+    def handle_language_change(self):
+        """
+        處理語言切換邏輯：取得使用者選擇的語言並更新視圖顯示。
+        """
+        selected_lang = self.login_view.get_selected_language()
+        self.login_view.update_language(selected_lang)
 
     def toggle_language_menu(self):
         if self.view.UpperViewlanguage_frame.winfo_ismapped():
@@ -156,6 +219,9 @@ class Controller():
 
     def show_staff_page(self):
         self.view.show_frame("StaffView")
+    
+    def show_VIP_page(self):
+        self.view.show_frame("OrderViewNew")
 
     def get_cart_quantity(self, drink_data):
         return self.cartModel.get_quantity(drink_data)

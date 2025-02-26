@@ -49,6 +49,10 @@ class BaseView(tk.Tk):
         if hasattr(frame, "canvas"):
             frame.canvas.bind("<MouseWheel>", frame._on_mousewheel)
     
+           # 确保新显示的页面也同步语言 / Ensure new page also updates language
+        if hasattr(frame, "update_language"):
+            frame.update_language(self.controller.current_language)
+    
     def set_current_frame(self, frame):
         self.current_frame = frame
 
