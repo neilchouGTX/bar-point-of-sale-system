@@ -350,7 +350,7 @@ class OrderModel:
             )
             for order in self.data
         ]
-
+        
     def add_order(self, table_number, cart_data):
         order_items = []
         total_price = 0.0

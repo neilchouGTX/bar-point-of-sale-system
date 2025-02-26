@@ -1,5 +1,5 @@
 import tkinter as tk
-from views.Login_view import * 
+from views.Login_view import *
 from Controller import*
 
 controller=Controller()
@@ -10,4 +10,3 @@ controller.view.mainloop()
 giamik
 83ceffee5f8939502d411b895d37d6d9
 """
-

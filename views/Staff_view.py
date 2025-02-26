@@ -8,7 +8,7 @@ class StaffView(Frame):
     def __init__(self, root, controller):
         super().__init__(root)
         self.controller = controller
-        self.configure(bg="#e0e0e0")
+        self.configure(bg="#A7C7E7")
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style(self)
         self.display()
