@@ -1,1 +1,17 @@
-[]
+[
+    {
+        "id": "1004801 ",
+        "name": "Rhum J. M",
+        "price": "67868767"
+    },
+    {
+        "id": "1004703 ",
+        "name": "Nils Oscar",
+        "price": "4778"
+    },
+    {
+        "id": "1001 ",
+        "name": "Vanlig Vodka",
+        "price": "7868"
+    }
+]
