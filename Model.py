@@ -70,6 +70,9 @@ class BeerModel():
                 return theData
         
         return None
+    def getDataByIds(self,ids):
+        result = [theData for theData in self.staticData if theData.nr in ids]
+        return result
 
 beerModel = BeerModel()
 
@@ -218,10 +221,10 @@ class CartModel:
 
 
 class MenuItem:
-    def __init__(self,id,name,price):
+    def __init__(self,id,name):
         self.id=id
         self.name=name
-        self.price=price
+        #self.price=price
 class MenuModel:
     def __init__(self):
         self.data=[]
@@ -252,11 +255,13 @@ class MenuModel:
     
     def jsonToObject(self):
         for theData in self.data:
-            theStaticData = MenuItem(1,2,3)
+            theStaticData = MenuItem(1,2)
             for key, value in theData.items():
                 if hasattr(theStaticData, key):
                     setattr(theStaticData, key, value)
             self.staticData.append(theStaticData)
+    def getData(self):
+        return self.staticData
     def addItem(self,menuData):
         self.staticData.append(menuData)
         self.saveData()

@@ -182,3 +182,15 @@ class Controller():
     
     def removeItemFromMenu(self,index):
         self.menuModel.removeItem(index)
+    
+    def getBeerDataFromMenu(self,):
+        menuData=self.menuModel.getData()
+        ids=[]
+        for theData in menuData:
+            ids.append(theData.id.strip())
+        
+        print(ids)
+        
+        theBeerStaticData=self.beerModel.getDataByIds(ids)
+        print(theBeerStaticData)
+        return theBeerStaticData

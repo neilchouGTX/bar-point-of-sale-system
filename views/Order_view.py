@@ -103,9 +103,9 @@ class OrderView(Frame):
 
         self.combo_box = ttk.Combobox(self.setMenuViewFrame, values=values,width=10)
         self.combo_box.grid(row=2,column=0,padx=5)
-        self.price=StringVar()
-        self.price_ent=Entry(self.setMenuViewFrame,textvariable=self.price,width=10)
-        self.price_ent.grid(row=2,column=1,padx=5)
+        #self.price=StringVar()
+        #self.price_ent=Entry(self.setMenuViewFrame,textvariable=self.price,width=10)
+        #self.price_ent.grid(row=2,column=1,padx=5)
 
         self.addMenuBtn=Button(self.setMenuViewFrame,text="Add to the Menu",command=self.addItemtoMenu)
         self.addMenuBtn.grid(row=2,column=2,padx=5)
@@ -115,8 +115,8 @@ class OrderView(Frame):
         self.id_lbl.grid(row=3,column=0)
         self.name_lbl=Label(self.setMenuViewFrame,text="name")
         self.name_lbl.grid(row=3,column=1)
-        self.price_lbl=Label(self.setMenuViewFrame,text="price")
-        self.price_lbl.grid(row=3,column=2)
+        #self.price_lbl=Label(self.setMenuViewFrame,text="price")
+        #self.price_lbl.grid(row=3,column=2)
 
         self.refreshMenu()
         
@@ -130,8 +130,8 @@ class OrderView(Frame):
             self.id_lbl.grid(row=4+index,column=0)
             self.name_lbl=Label(self.setMenuViewFrame,text=theItem.name)
             self.name_lbl.grid(row=4+index,column=1)
-            self.price_lbl=Label(self.setMenuViewFrame,text=theItem.price)
-            self.price_lbl.grid(row=4+index,column=2)
+            #self.price_lbl=Label(self.setMenuViewFrame,text=theItem.price)
+            #self.price_lbl.grid(row=4+index,column=2)
             self.remove_btn=Button(self.setMenuViewFrame,text="Remove",command=lambda i=index :self.removeItemFromMenu(i))
             self.remove_btn.grid(row=4+index,column=3)
 
@@ -140,10 +140,10 @@ class OrderView(Frame):
         data=self.combo_box.get()
         data=data.split(",")
         
-        id=data[0]
-        name=data[1]
-        price=self.price.get()
-        theItem=MenuItem(id,name,price)
+        id=data[0].strip()
+        name=data[1].strip()
+        #price=self.price.get()
+        theItem=MenuItem(id,name)
         self.controller.addItemToMenu(theItem)
         self.refreshMenu()
     def removeItemFromMenu(self,index):
