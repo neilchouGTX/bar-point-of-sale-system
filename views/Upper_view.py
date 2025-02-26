@@ -22,7 +22,7 @@ class UpperView(Frame):
         self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: self.changePage("OrderViewNew"))
         self.upper_my_orders_btn.pack(side="left", padx=15, pady=10)
 
-        self.upper_staff_view_btn = tk.Button(self, text="Staff", **self.button_style, command=lambda: self.changePage("StaffView"))
+        self.upper_staff_view_btn = tk.Button(self, text="Reservations", **self.button_style, command=lambda: self.changePage("ReservationView"))
         self.upper_staff_view_btn.pack(side="left", padx=15, pady=10)
 
         # Title
