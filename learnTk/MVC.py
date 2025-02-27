@@ -120,3 +120,5 @@ class Controller:
 if __name__ == "__main__":
     controller = Controller()
     controller.view.mainloop()
+
+print("11232313133")
