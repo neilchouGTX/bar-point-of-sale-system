@@ -122,3 +122,4 @@ if __name__ == "__main__":
     controller.view.mainloop()
 
 print("MVCtest")
+print("11232313133")
