@@ -22,7 +22,7 @@ class CartView(Frame):
         self.canvas = None
         self.scroll_y = None
         self.frame = None
-        self.controller.clear_cart()
+        #self.controller.clear_cart()
         self.create_submenu()
         self.create_main_area()
         self.load_drinks()
@@ -58,8 +58,29 @@ class CartView(Frame):
         )
         shopping_cart_btn.pack(side="right", padx=10, pady=5)
 
-        
+        undo_btn = tk.Button(
+            self.submenu_frame,
+            text="undo",
+            **self.button_style,
+            command = self.undo
+        )
+        undo_btn.pack(side="right", padx=10, pady=5)
 
+        redo_btn = tk.Button(
+            self.submenu_frame,
+            text="redo",
+            **self.button_style,
+            command=self.redo
+        )
+        redo_btn.pack(side="right", padx=10, pady=5)
+
+        
+    def undo(self):
+        self.controller.cart_undo()
+        self.refresh()
+    def redo(self):
+        self.controller.cart_redo()
+        self.refresh()
     def create_main_area(self):
         # main scrollable area
         self.canvas = tk.Canvas(self, bg="white")

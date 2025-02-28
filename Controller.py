@@ -235,7 +235,10 @@ class Controller():
         self.cartModel.add_to_cart(drink_data)
     def remove_drink_to_cart(self, drink_data):
         self.cartModel.remove_from_cart(drink_data)
-
+    def cart_undo(self):
+        self.cartModel.cart_undo()
+    def cart_redo(self):
+        self.cartModel.cart_redo()
     def clear_cart(self):
         self.cartModel.clear_cart()
     def get_cart_data(self):
@@ -274,8 +277,8 @@ class Controller():
         for theData in menuData:
             ids.append(theData.id.strip())
         
-        print(ids)
+        #print(ids)
         
         theBeerStaticData=self.beerModel.getDataByIds(ids)
-        print(theBeerStaticData)
+        #print(theBeerStaticData)
         return theBeerStaticData
