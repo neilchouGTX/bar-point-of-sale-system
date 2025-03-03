@@ -30,8 +30,12 @@ class UpperView(Frame):
         self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
         self.upper_my_orders_btn.grid(row=0, column=1, padx=10, pady=10)
 
-        self.upper_staff_view_btn = tk.Button(self, text="Reservations", **self.button_style, command=lambda: self.changePage("ReservationView"))
+        # --TO DO--
+        # Only allow access to "Staff" view if logged in as staff; otherwise, greyed out.
+
+        self.upper_staff_view_btn = tk.Button(self, text="Staff", **self.button_style, command=lambda: self.changePage("StaffView"))
         self.upper_staff_view_btn.grid(row=0, column=2, padx=10, pady=10)
+
         # Title
         title_label = Label(self, text="The Flying Dutchman", font=("Georgia", 30, "bold"),
                             bg="#A7C7E7", fg="#000435")
