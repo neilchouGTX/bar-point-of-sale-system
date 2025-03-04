@@ -1,7 +1,6 @@
 import os
 import json
 
-# New Stock data models
 class StockData:
     """用來儲存單個飲品的庫存數據"""
     def __init__(self, beverage_id, amount=0):
@@ -18,6 +17,7 @@ class StockModel:
         self.load_stock()
 
     def load_stock(self):
+        """Load initial stock data into memory."""
         with open(self.file_path, 'r', encoding='utf-8') as f:
             self.data = json.load(f)
         self.stock = {item["nr"]: item["total_stock"] for item in self.data}
@@ -35,10 +35,12 @@ class StockModel:
         self.sorted_data = sorted(self.data, key=lambda x: x["nr"])
 
     def update_stock(self, beverage_id, amount):
+        # Update stock for a specific beverage
         self.stock[beverage_id] = amount
         self.save_stock()
 
     def get_stock(self, beverage_id):
+        #Get stock amount for a specific beverage.
         return self.stock.get(beverage_id, 0)
 
     def add_beverage(self, beverage):
@@ -48,6 +50,7 @@ class StockModel:
         self.save_stock()
 
     def remove_beverage(self, beverage_name):
+        # Remove a beverage from the stock by name.
         removed = False
         for item in self.data:
             if item["namn"] == beverage_name:
@@ -61,14 +64,33 @@ class StockModel:
         return removed
 
     def view_total_stock(self):
+        #View total stock 
         total = sum(self.stock.values())
         details = "\n".join([f"{item['namn']} (nr: {item['nr']}): {item['total_stock']}" for item in self.data])
         return total, details
     
-    def view_total_stock_page(self, page=1, page_size=20):
+
+    def view_total_stock_page(self, page=1, page_size=20, filter_text=""):
+        # View stock data for a specific page
         import math
-        total = sum(self.stock.values())
-        total_items = len(self.sorted_data)
+        with open(self.file_path, 'r', encoding='utf-8') as f:
+            f.seek(1)  # Skip the opening '['
+            items = []
+            while True:
+                line = f.readline().strip()
+                if line == ']':
+                    break
+                if line.endswith(','):
+                    line = line[:-1]
+                try:
+                    item = json.loads(line)
+                    # Apply filter if provided
+                    if not filter_text or filter_text.lower() in item["nr"].lower() or filter_text.lower() in item["namn"].lower():
+                        items.append(item)
+                except json.JSONDecodeError:
+                    continue  # Skip invalid lines
+
+        total_items = len(items)
         total_pages = math.ceil(total_items / page_size)
         if page < 1:
             page = 1
@@ -76,8 +98,9 @@ class StockModel:
             page = total_pages
         start = (page - 1) * page_size
         end = start + page_size
-        page_items = self.sorted_data[start:end]
+        page_items = items[start:end]
         details = "\n".join([f"{item['namn']} (nr: {item['nr']}): {item['total_stock']}" for item in page_items])
+        total = sum(item['total_stock'] for item in items)
         return total, details, page, total_pages
 
 stockModel = StockModel()
