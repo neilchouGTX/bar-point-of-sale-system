@@ -1,19 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
-from styles.style_config import *  # Assuming this provides fonts and styles
+from styles.style_config import * 
 import tkinter.simpledialog as sd
 import tkinter.messagebox as mbox
 
-# Assuming MenuItem is defined somewhere accessible
-class MenuItem:
-    def __init__(self, nr, namn):
-        self.nr = nr
-        self.namn = namn
-
 class StaffView(tk.Frame):
-    def __init__(self, root, controller):  # Changed 'parent' to 'root'
-        super().__init__(root)  # Updated parameter name
+    def __init__(self, root, controller):
+        super().__init__(root)
         self.controller = controller
         self.current_page = "order"  # Default page
         self.stock_page = 1
@@ -42,28 +36,28 @@ class StaffView(tk.Frame):
             btn.grid(row=0, column=idx, padx=10)
             self.buttons[page] = btn
 
-        # Table frame with fixed size (70% of previous size)
-        self.table_frame = tk.Frame(self, bg="white", bd=2, relief="solid", width=392, height=280)
+        # Table frame
+        self.table_frame = tk.Frame(self, bg="white", bd=2, relief="solid", width=235, height=168)
         self.table_frame.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
         self.table_frame.grid_propagate(False)  # Prevent auto-resizing
 
-        # Highlight default button
+
         self.highlight_button(self.current_page)
 
-        # Configure grid weights for responsiveness
+
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
     def switch_page(self, page):
         """Switch the current page and update the table."""
         self.current_page = page
-        self.stock_page = 1  # Reset stock page on switch
-        self.stock_filter = ""  # Reset filter
+        self.stock_page = 1  
+        self.stock_filter = ""  #
         self.highlight_button(page)
         self.load_page(page)
 
     def highlight_button(self, page):
-        """Highlight the active button with yellow, others with button_style."""
+        
         for btn_page, btn in self.buttons.items():
             if btn_page == page:
                 btn.config(bg="#FFC107")  # Yellow for active
@@ -71,7 +65,6 @@ class StaffView(tk.Frame):
                 btn.config(**self.button_style)  # Default style for inactive
 
     def load_page(self, page):
-        """Clear and repopulate the table based on the selected page."""
         # Clear table_frame completely to prevent layout shifts
         for widget in self.table_frame.winfo_children():
             widget.destroy()
@@ -94,7 +87,7 @@ class StaffView(tk.Frame):
             self.load_menu()
 
     def load_orders(self):
-        """Populate table with order data."""
+        "Populate table with order data."
         columns = ("table_number", "beer", "amount", "action")
         self.table["columns"] = columns
         for col in columns:
@@ -114,32 +107,31 @@ class StaffView(tk.Frame):
                 self.table.insert("", "end", values=(table_number, beer_name, amount, ""), tags=("action_row",))
 
         for iid in self.table.get_children():
-            self.add_action_buttons(iid, ["complete", "cancel"], self.order_action)
+            self.action_buttons(iid, ["complete", "cancel"], self.order_action)
 
     def load_stock(self):
-        """Populate table with stock data, using pagination and filtering."""
         columns = ("id", "beer", "amount", "action")
         self.table["columns"] = columns
         for col in columns:
             self.table.heading(col, text=col.capitalize(), anchor="w")
             self.table.column(col, width=150, anchor="w")
 
-        # Fetch paginated stock data
+        # Fetch paginated stock data with lazy loading
         total, details, current_page, total_pages = self.controller.stockModel.view_total_stock_page(
             self.stock_page, self.stock_page_size, self.stock_filter)
         stock_data = []
         for line in details.split("\n"):
             if ":" in line:
                 bev, amt = line.split(":")
-                bev_id = bev.strip().replace("Beverage ", "").split(" (nr: ")[1].rstrip(")")
-                bev_name = bev.split(" (nr: ")[0].replace("Beverage ", "").strip()
+                bev_id = bev.strip().split(" (nr: ")[1].rstrip(")")
+                bev_name = bev.split(" (nr: ")[0].strip()
                 stock_data.append({"id": bev_id, "beer": bev_name, "amount": int(amt.strip())})
 
         for item in stock_data:
             self.table.insert("", "end", values=(item["id"], item["beer"], item["amount"], ""), tags=("action_row",))
 
         for iid in self.table.get_children():
-            self.add_action_buttons(iid, ["edit"], self.stock_action)
+            self.action_buttons(iid, ["edit"], self.stock_action)
 
         # Add filter and pagination controls using grid inside a control frame
         control_frame = tk.Frame(self.table_frame, bg="white")
@@ -184,16 +176,16 @@ class StaffView(tk.Frame):
             self.table.heading(col, text=col.capitalize(), anchor="w")
             self.table.column(col, width=150, anchor="w")
 
-        # Placeholder data (no reservation model provided)
+        # Placeholder data
         reservations = [{"id": "1", "table_number": "3", "time": "18:00", "status": "Pending"}]
         for res in reservations:
             self.table.insert("", "end", text=res["id"], values=(res["table_number"], res["time"], res["status"], ""), tags=("action_row",))
 
         for iid in self.table.get_children():
-            self.add_action_buttons(iid, ["confirm", "cancel"], self.reservation_action)
+            self.action_buttons(iid, ["confirm", "cancel"], self.reservation_action)
 
     def load_menu(self):
-        """Populate table with menu data from dutchman_menu.json."""
+        """Populate table with menu data from dutchman_menu.json and add menu addition section."""
         columns = ("id", "name", "action")
         self.table["columns"] = columns
         for col in columns:
@@ -207,40 +199,40 @@ class StaffView(tk.Frame):
         for iid in self.table.get_children():
             self.add_action_buttons(iid, ["remove"], self.menu_action)
 
-        # Add "ADD" button below the table
-        add_btn = tk.Button(self.table_frame, text="ADD", **self.button_style, command=self.add_menu_item)
-        add_btn.pack(pady=5)
+        # Add menu addition frame below the table
+        add_frame = tk.Frame(self.table_frame, bg="white")
+        add_frame.pack(pady=10)
+
+        tk.Label(add_frame, text="Add Menu Item", font=self.custom_font, bg="white").pack(pady=5)
+
+        # Combobox for selecting beverage
+        beers = self.controller.beerModel.staticData
+        print("Number of beers available:", len(beers))  # Debug: Check beer data
+        values = [f"{beer.nr}, {beer.namn}" for beer in beers[:20]]  # Limit to first 20
+        self.combo = ttk.Combobox(add_frame, values=values, width=50)
+        self.combo.pack(padx=10, pady=5)
+
+        add_btn = tk.Button(add_frame, text="Add", **self.button_style, command=self.add_menu_item)
+        add_btn.pack(pady=10)
 
     def add_menu_item(self):
-        """Add a new item to the menu with a combo box selection."""
-        dialog = tk.Toplevel(self)
-        dialog.title("Add Menu Item")
-        
-        # Fetch all available beers from the beer model
-        beers = self.controller.beerModel.staticData
-        values = [f"{beer.nr}, {beer.namn}" for beer in beers]
-        
-        # Combo box setup
-        tk.Label(dialog, text="Select Beer:").pack(padx=10, pady=5)
-        combo = ttk.Combobox(dialog, values=values, width=50)
-        combo.pack(padx=10, pady=5)
-        
-        def on_add():
-            selected = combo.get()
-            if selected:
+        """Add a new item to the menu using the combobox selection."""
+        selected = self.combo.get()
+        print("Selected value:", selected)  # Debug: Check combobox selection
+        if selected:
+            try:
                 nr, namn = selected.split(", ", 1)
+                print("Parsed - nr:", nr, "namn:", namn)  # Debug: Check split result
                 menu_item = MenuItem(nr.strip(), namn.strip())
                 self.controller.addItemToMenu(menu_item)
-                self.load_page("menu")
-                dialog.destroy()
+                self.load_page("menu")  # Refresh the menu page
                 mbox.showinfo("Menu Update", f"Added {namn.strip()} to menu.")
-            else:
-                mbox.showerror("Error", "Please select a beer.")
-        
-        tk.Button(dialog, text="Add", command=on_add).pack(pady=10)
+            except Exception as e:
+                mbox.showerror("Error", f"Failed to add item: {str(e)}")
+        else:
+            mbox.showerror("Error", "Please select a beer.")
 
-    def add_action_buttons(self, iid, actions, callback):
-        """Add action buttons to a table row."""
+    def action_buttons(self, iid, actions, callback):
         values = list(self.table.item(iid, "values"))
         action_frame = tk.Frame(self.table)
         for action in actions:
@@ -248,12 +240,12 @@ class StaffView(tk.Frame):
                             bg="green" if action == "complete" else "#ADD8E6",
                             fg="white", command=lambda a=action, i=iid: callback(a, i))
             btn.pack(side="left", padx=2)
-        # Here we set the last column's value to the action_frame widget.
+        # Set the last column's value to the action_frame widget
         self.table.set(iid, column=len(values)-1, value=action_frame)
         self.table.item(iid, values=values)
 
     def order_action(self, action, iid):
-        """Handle order actions."""
+        "Handle order actions."
         table_number = self.table.item(iid, "values")[0]
         if action == "complete":
             self.controller.orderModel.staticData = [
@@ -266,7 +258,7 @@ class StaffView(tk.Frame):
             print(f"Cancel order for table {table_number}")
 
     def stock_action(self, action, iid):
-        """Handle stock actions."""
+        "Handle stock actions."
         if action == "edit":
             bev_id = self.table.item(iid, "values")[0]
             new_amount = tk.simpledialog.askinteger("Edit Stock", f"New amount for {bev_id}:")
