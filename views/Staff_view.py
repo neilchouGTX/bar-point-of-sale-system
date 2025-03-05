@@ -17,13 +17,13 @@ class StaffView(tk.Frame):
         self.configure(bg="#A7C7E7")
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style(self)
-        #初始化語言 /initialize language
-        self.languages = languages
-        self.current_language = self.controller.current_language
 
         self.setup_ui()
         self.load_page(self.current_page)
 
+        #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
        
 
 
@@ -63,6 +63,7 @@ class StaffView(tk.Frame):
         self.stock_filter = ""  #
         self.highlight_button(page)
         self.load_page(page)
+        self.update_language(self.controller.current_language)
 
     def highlight_button(self, page):
         
@@ -146,18 +147,18 @@ class StaffView(tk.Frame):
         control_frame.pack(pady=5)
 
         # Filter controls
-        filter_label = tk.Label(control_frame, text="Filter by ID or name:", font=self.custom_font, bg="white")
-        filter_label.grid(row=0, column=0, padx=5)
-        filter_entry = tk.Entry(control_frame)
-        filter_entry.grid(row=0, column=1, padx=5)
-        filter_btn = tk.Button(control_frame, text="Filter", **self.button_style, command=lambda: self.apply_stock_filter(filter_entry.get()))
-        filter_btn.grid(row=0, column=2, padx=5)
+        self.filter_label = tk.Label(control_frame, text="Filter by ID or name:", font=self.custom_font, bg="white")
+        self.filter_label.grid(row=0, column=0, padx=5)
+        self.filter_entry = tk.Entry(control_frame)
+        self.filter_entry.grid(row=0, column=1, padx=5)
+        self.filter_btn = tk.Button(control_frame, text="Filter", **self.button_style, command=lambda: self.apply_stock_filter(self.filter_entry.get()))
+        self.filter_btn.grid(row=0, column=2, padx=5)
 
         # Pagination buttons
-        prev_btn = tk.Button(control_frame, text="Previous", **self.button_style, command=self.prev_stock_page)
-        prev_btn.grid(row=0, column=3, padx=5)
-        next_btn = tk.Button(control_frame, text="Next", **self.button_style, command=self.next_stock_page)
-        next_btn.grid(row=0, column=4, padx=5)
+        self.prev_btn = tk.Button(control_frame, text="Previous", **self.button_style, command=self.prev_stock_page)
+        self.prev_btn.grid(row=0, column=3, padx=5)
+        self.next_btn = tk.Button(control_frame, text="Next", **self.button_style, command=self.next_stock_page)
+        self.next_btn.grid(row=0, column=4, padx=5)
 
     def prev_stock_page(self):
         """Go to the previous stock page."""
@@ -305,3 +306,11 @@ class StaffView(tk.Frame):
         for key, button in self.buttons.items():
             if key in button_map:
                 button.config(text=button_map[key])
+        
+        # 僅在切換到 “stock” 頁時，才更新 filter_label, prev_btn, next_btn
+        if self.current_page == "stock":
+            # 確保這些屬性已在 load_stock() 中被建立
+                self.filter_label.config(text=ldict['filter_label'])
+                self.filter_btn.config(text=ldict['filter'])
+                self.prev_btn.config(text=ldict['previous'])
+                self.next_btn.config(text=ldict['next'])
