@@ -8,7 +8,7 @@ LoginView.py
 import tkinter as tk
 from tkinter import ttk
 # 從 model 引入多語系字典 (languages)
-from Model_Language import languages
+from Controller_translations import languages
 
 class LoginView(tk.Frame):
     """
@@ -166,7 +166,7 @@ class LoginView(tk.Frame):
         # if self.master is not None:
         #     self.master.title(self.languages[self.current_language]['app_title'])
         # 更新各個文字標籤
-
+        
         self.vip_radio.config(text=self.languages[self.current_language]['radio_vip'])
         self.staff_radio.config(text=self.languages[self.current_language]['radio_staff'])
         self.identifier_label.config(text=self.languages[self.current_language]['identifier_label'])

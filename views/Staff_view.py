@@ -4,6 +4,7 @@ from functools import partial
 from styles.style_config import * 
 import tkinter.simpledialog as sd
 import tkinter.messagebox as mbox
+from Controller_translations import languages
 
 class StaffView(tk.Frame):
     def __init__(self, root, controller):
@@ -16,8 +17,15 @@ class StaffView(tk.Frame):
         self.configure(bg="#A7C7E7")
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style(self)
+        #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
+
         self.setup_ui()
         self.load_page(self.current_page)
+
+       
+
 
     def setup_ui(self):
         """Set up the UI with grid layout."""
@@ -276,3 +284,24 @@ class StaffView(tk.Frame):
             item_id = self.table.item(iid, "values")[0]
             self.controller.removeItemFromMenu(item_id)
             self.load_page("menu")
+
+    def update_language(self, lang_code):
+        """
+        只更新導航按鈕的語言，而不改變表格標題。
+        Update only the navigation buttons' text without modifying table headers.
+        """
+        # 獲取當前語言字典 / Get the current language dictionary
+        ldict = self.controller.languages[lang_code]
+
+        # 對應關鍵字與語言字典中的翻譯 / Map button keys to their translated text
+        button_map = {
+            "order": ldict['order_page'],
+            "stock": ldict['stock_page'],
+            "reservation": ldict['reservation_page'],
+            "menu": ldict['menu_page']
+        }
+
+        # 逐一更新導航按鈕文字 / Update the text of each navigation button
+        for key, button in self.buttons.items():
+            if key in button_map:
+                button.config(text=button_map[key])

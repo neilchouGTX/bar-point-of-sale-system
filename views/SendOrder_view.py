@@ -4,6 +4,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 import os
 from styles.style_config import *
+from Controller_translations import languages
 
 class SendOrderView(Frame):
     def __init__(self, root, controller):
@@ -29,17 +30,24 @@ class SendOrderView(Frame):
         self.create_submit_button()
         self.load_drinks()
 
+        #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
+
+        
+
+
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
         self.submenu_frame.grid(row=0, column=0, sticky="ew")
 
-        back_btn = tk.Button(
+        self.back_btn = tk.Button(
             self.submenu_frame, 
             text="Back",
             **self.button_style,
             command=lambda: self.controller.view.show_frame("CartView") 
         )
-        back_btn.pack(side="left", padx=10, pady=5)
+        self.back_btn.pack(side="left", padx=10, pady=5)
 
         self.confirmed_label = tk.Label(
             self.submenu_frame,
@@ -135,6 +143,22 @@ class SendOrderView(Frame):
         self.load_drinks()
         self.update_all_total_price()
 
+    def update_language(self, lang_code):
+        """
+        更新 SendOrderView 的語言，僅更新標題和按鈕文字。
+        Update the language of the SendOrderView, focusing only on the title and buttons.
+        """
+        # 取得當前語言的字典 / Get the current language dictionary
+        ldict = self.controller.languages[lang_code]
+
+        # 更新標題文字 / Update the title label
+        self.confirmed_label.config(text=ldict['confirmed_order'])
+        self.total_price_label.config(text=f"{ldict['total']}: 0 kr")
+
+        # 更新按鈕文字 / Update button texts
+        self.submit_btn.config(text=ldict['send_order'])
+        self.back_btn.config(text=ldict['back'])
+
 
 class DrinkCard(tk.Frame):
     def __init__(self, parent, drink_data, controller):
@@ -198,3 +222,4 @@ class DrinkCard(tk.Frame):
     def update_total_price(self):
         total_price = float(self.drink_data.prisinklmoms) * self.quantity
         self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
+

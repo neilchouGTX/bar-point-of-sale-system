@@ -5,7 +5,7 @@ from tkinter import font
 from styles.style_config import *
 import json
 
-from Model_Language import languages
+from Controller_translations import languages
 
 class UpperView(Frame):
     def __init__(self,root,controller):
@@ -60,14 +60,14 @@ class UpperView(Frame):
         self.combo.current(0)
         
         # 绑定语言选择事件 / Bind language selection event
-        self.combo.bind("<<ComboboxSelected>>", self.handle_language_change)
+        #self.combo.bind("<<ComboboxSelected>>", self.handle_language_change)
 
-    def handle_language_change(self, event=None):
-        """
-        处理语言切换逻辑 / Handle language switching logic
-        """
-        selected_language = self.selected_var.get()
-        self.controller.set_language(selected_language)  # 让 Controller 处理语言更新
+    # def handle_language_change(self, event=None):
+    #     """
+    #     处理语言切换逻辑 / Handle language switching logic
+    #     """
+    #     selected_language = self.selected_var.get()
+    #     self.controller.set_language(selected_language)  # 让 Controller 处理语言更新
 
     def update_language(self, lang_code):
         """
@@ -78,10 +78,10 @@ class UpperView(Frame):
         self.upper_my_orders_btn.config(text=self.languages[lang_code].get('order_button', "Orders"))
         self.upper_staff_view_btn.config(text=self.languages[lang_code].get('staff_button', "Staff"))
         self.upper_login_top_btn.config(text=self.languages[lang_code]['login_button'])
-        self.title_label.config(text=self.languages[lang_code]['app_title'])
+        #self.title_label.config(text=self.languages[lang_code]['app_title'])
 
     def changePage(self, page_name):
         """
         切换页面 / Change page
         """
-        self.controller.view.show_frame(page_name)
+        self.controller.show_frame(page_name)

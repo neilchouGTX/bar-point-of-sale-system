@@ -4,6 +4,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from styles.style_config import *
 import os
+from Controller_translations import languages
 
 class OrderViewNew(Frame):
     def __init__(self, root, controller):
@@ -25,6 +26,10 @@ class OrderViewNew(Frame):
         self.create_main_area()
         self.load_drinks()
         # self.create_ui()
+        
+        #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
 
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
@@ -120,6 +125,21 @@ class OrderViewNew(Frame):
             self.category = new_category
         self.load_drinks()
 
+    #更新點單视图的语言 / Update the language of the order view
+    def update_language(self, lang_code):
+        self.current_language = lang_code
+        self.submenu_frame.winfo_children()[0].config(text=self.languages[lang_code]['vitt_vin'])
+        self.submenu_frame.winfo_children()[1].config(text=self.languages[lang_code]['okryddad_sprit'])
+        self.submenu_frame.winfo_children()[2].config(text=self.languages[lang_code]['cognac'])
+        self.shopping_cart_btn.config(text=self.languages[lang_code]['shopping_cart'])
+        
+        for widget in self.inner_frame.winfo_children():
+        # 判斷是否是 DrinkCard 類型
+            if isinstance(widget, DrinkCard):
+                widget.update_language(lang_code)
+
+
+
 
 class DrinkCard(tk.Frame):
     def __init__(self, parent, drink_data, controller):
@@ -127,6 +147,9 @@ class DrinkCard(tk.Frame):
         self.controller = controller
         self.drink_data = drink_data
         self.quantity = self.controller.get_cart_quantity(self.drink_data)  # number of drinks in cart
+
+        self.languages = languages
+        self.current_language = self.controller.current_language
 
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style2(self)
@@ -158,6 +181,8 @@ class DrinkCard(tk.Frame):
             bg="#B3E5FC"
         )
         self.info_label.pack(pady=5)
+
+        self.update_language(self.current_language)
 
         # Quantity adjustment area
         self.quantity_frame = tk.Frame(self, bg="#B3E5FC")
@@ -241,3 +266,17 @@ class DrinkCard(tk.Frame):
             self.quantity -= 1
             self.quantity_label.config(text=str(self.quantity))
             self.controller.remove_drink_to_cart(self.drink_data)
+
+    def update_language(self, lang_code):
+        self.current_language = lang_code
+        self.info_label.config(text=f"{self.languages[lang_code]['name']}: {self.drink_data.namn}\n"
+                                    f"{self.languages[lang_code]['producer']}: {self.drink_data.producent}\n"
+                                    f"{self.languages[lang_code]['country']}: {self.drink_data.ursprunglandnamn}\n"
+                                    f"{self.languages[lang_code]['type']}: {self.drink_data.varugrupp}\n"
+                                    f"{self.languages[lang_code]['alc']}: {self.drink_data.alkoholhalt}\n"
+                                    f"{self.languages[lang_code]['packaging']}: {self.drink_data.forpackning}\n"
+                                    f"{self.languages[lang_code]['price']}: {self.drink_data.prisinklmoms} kr")
+        self.info_label.update()
+
+    
+   

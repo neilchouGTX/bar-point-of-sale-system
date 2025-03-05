@@ -36,6 +36,9 @@ class BaseView(tk.Tk):
             else:
                 frame.grid(row=1, column=0, sticky="nsew")
     
+        # 設置初始語言 / Set the initial language
+        self.update_all_languages(self.controller.current_language)
+  
         self.show_frame("HomeView")
 
     def show_frame(self, page_name):
@@ -60,3 +63,12 @@ class BaseView(tk.Tk):
 
     def get_current_frame(self):
         return self.current_frame
+    
+    def update_all_languages(self, lang_code):
+        """
+        讓所有視圖的語言與當前語言設置同步
+        Synchronize the language of all views with the current language setting
+        """
+        for frame in self.frames.values():
+            if hasattr(frame, "update_language"):
+                frame.update_language(lang_code)

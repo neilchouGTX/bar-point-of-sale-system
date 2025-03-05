@@ -2,9 +2,10 @@ from views.Login_view import *
 from Model import *
 from views.Order_view import *
 from Base_view import *
-
+from Controller_translations import languages
 class Controller():
     def __init__(self):
+        self.languages = languages
         ## Model
         self.userModel = UserModel()
         self.beerModel = BeerModel()
@@ -18,8 +19,12 @@ class Controller():
         ## 全局语言设置 / Global language setting
         self.current_language = "English"
 
-        ## View
+        ## View # Must initialize self.view at first
         self.view = BaseView(self)
+
+        # 設置初始語言給所有視圖    
+        self.view.update_all_languages(self.current_language)
+
 
         # 建立或取得登录视图，并绑定登录相关事件
         if 'LoginView' in self.view.frames:
@@ -33,9 +38,13 @@ class Controller():
         self.login_view.bind_logout(self.handle_logout)
 
         # 绑定 UpperView 里的语言切换控件/ Bind Language change in Upperview.py
-        self.upper_view = UpperView(self.view, self)
-        self.upper_view.combo.bind("<<ComboboxSelected>>", self.handle_language_change)
-    
+        self.upper_view = self.view.frames.get("UpperView")
+
+        if self.upper_view and hasattr(self.upper_view, "combo"):
+            print("Combo box found, binding event...")
+            self.upper_view.combo.bind("<<ComboboxSelected>>", self.handle_language_change)
+        else:
+            print("Combo box not found!")
 
     def handle_login(self):
         """
@@ -63,23 +72,39 @@ class Controller():
         self.userModel.logout()
         self.login_view.show_login_view()
     
+    def handle_language_change(self, event=None):
+        """
+        處理語言切換事件，更新全局語言並通知視圖更新
+        Handle the language change event, update the global language, and notify views to refresh
+        """
+        selected_lang = self.upper_view.selected_var.get()
+        self.set_language(selected_lang)
+    
     def set_language(self, lang_code):
         """
-        设置全局语言并更新所有视图 / Set global language and update all views
+        設置全局語言並通知 Base_view 更新所有視圖語言
+        Set the global language and notify Base_view to update all view languages
         """
         self.current_language = lang_code
+        self.view.update_all_languages(lang_code)
 
-        # 更新所有已初始化的视图 / Update all initialized views
-        for frame in self.view.frames.values():
-            if hasattr(frame, "update_language"):
-                frame.update_language(lang_code)
-    
-    def handle_language_change(self):
+    # def handle_language_change(self):
+    #     """
+    #     處理語言切換邏輯：取得使用者選擇的語言並更新視圖顯示。
+    #     """
+    #     selected_lang = self.login_view.get_selected_language()
+    #     self.login_view.update_language(selected_lang)
+
+    def show_frame(self, page_name):
         """
-        處理語言切換邏輯：取得使用者選擇的語言並更新視圖顯示。
+        顯示指定頁面，並確保語言同步
+        Show the specified page and ensure the language is synchronized
         """
-        selected_lang = self.login_view.get_selected_language()
-        self.login_view.update_language(selected_lang)
+        self.view.show_frame(page_name)
+        # 確保新顯示的頁面語言更新
+        frame = self.view.frames.get(page_name)
+        if frame and hasattr(frame, "update_language"):
+            frame.update_language(self.current_language)
 
     def toggle_language_menu(self):
         if self.view.UpperViewlanguage_frame.winfo_ismapped():

@@ -3,6 +3,7 @@ from tkinter import ttk
 from styles.style_config import *
 from tkinter import messagebox
 import json
+from Controller_translations import languages
 
 class ReservationView(Frame):
     def __init__(self, root, controller):
@@ -12,11 +13,17 @@ class ReservationView(Frame):
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style(self)
         self.reservations = []
+        
         self.display()
+    
+         #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
+
 
     def display(self):
-        title = tk.Label(self, text="Reservations", font=("Georgia", 24, "bold"), bg="#A7C7E7", fg="#000435")
-        title.pack(pady=20)
+        self.title = tk.Label(self, text="Reservations", font=("Georgia", 24, "bold"), bg="#A7C7E7", fg="#000435")
+        self.title.pack(pady=20)
 
         # Table UI
         style = ttk.Style()
@@ -36,11 +43,11 @@ class ReservationView(Frame):
         btn_frame = Frame(self, bg="#A7C7E7")
         btn_frame.pack(pady=20)
 
-        add_rsv_btn = Button(btn_frame, text="Add Reservation", **self.button_style, width=10, command=self.reservation_form)
-        add_rsv_btn.grid(row=0, column=0, padx=10, pady=10)
+        self.add_rsv_btn = Button(btn_frame, text="Add Reservation", **self.button_style, width=10, command=self.reservation_form)
+        self.add_rsv_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        cancel_rsv_btn = Button(btn_frame, text="Cancel Reservation", **self.button_style, width=10, command=self.cancel_reservation)
-        cancel_rsv_btn.grid(row=0, column=1, padx=10, pady=10)
+        self.cancel_rsv_btn = Button(btn_frame, text="Cancel Reservation", **self.button_style, width=10, command=self.cancel_reservation)
+        self.cancel_rsv_btn.grid(row=0, column=1, padx=10, pady=10)
 
     def reservation_form(self):
         rsv_window = Toplevel(self)
@@ -96,3 +103,18 @@ class ReservationView(Frame):
         result = tk.messagebox.askyesno("Confirm Cancellation", "Are you sure you want to cancel this reservation?")
         if result:
             self.tree.delete(rsv_selection)
+    
+    def update_language(self, lang_code):
+        """
+        更新 ReservationView 的語言，僅更新標題和按鈕文字。
+        Update the language of the ReservationView, focusing only on the title and buttons.
+        """
+        # 取得當前語言的字典 / Get the current language dictionary
+        ldict = self.controller.languages[lang_code]
+
+        # 更新標題文字 / Update the title label
+        self.title.config(text=ldict['reservation_page'])
+
+        # 更新按鈕文字 / Update button texts
+        self.add_rsv_btn.config(text=ldict['add_reservation'])
+        self.cancel_rsv_btn.config(text=ldict['cancel_reservation'])

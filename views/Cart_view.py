@@ -6,6 +6,8 @@ import os, sys
 from styles.style_config import *
 import os
 
+from Controller_translations import languages
+
 class CartView(Frame):
     def __init__(self, root, controller):
         super().__init__(root)
@@ -27,19 +29,24 @@ class CartView(Frame):
         self.create_main_area()
         self.load_drinks()
         # self.create_ui()
+        
+        #初始化語言 /initialize language
+        self.languages = languages
+        self.current_language = self.controller.current_language
+
 
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
         self.submenu_frame.grid(row=0, column=0, sticky="ew")
 
         # for category in ["Vitt vin", "Okryddad sprit"]:
-        VittVin_btn = tk.Button(
+        self.VittVin_btn = tk.Button(
             self.submenu_frame, 
             text="Back",
             **self.button_style,
             command=lambda: self.controller.view.show_frame("OrderViewNew") 
         )
-        VittVin_btn.pack(side="left", padx=10, pady=5)
+        self.VittVin_btn.pack(side="left", padx=10, pady=5)
 
         self.total_price_label = tk.Label(
             self.submenu_frame,
@@ -50,29 +57,29 @@ class CartView(Frame):
         )
         self.total_price_label.pack(side="right", padx=10, pady=5)
 
-        shopping_cart_btn = tk.Button(
+        self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
             text="Checkout",
             **self.button_style,
             command=lambda: (self.controller.view.show_frame("SendOrderView"), self.controller.refreshSendOrderView())
         )
-        shopping_cart_btn.pack(side="right", padx=10, pady=5)
+        self.shopping_cart_btn.pack(side="right", padx=10, pady=5)
 
-        undo_btn = tk.Button(
+        self.undo_btn = tk.Button(
             self.submenu_frame,
             text="undo",
             **self.button_style,
             command = self.undo
         )
-        undo_btn.pack(side="right", padx=10, pady=5)
+        self.undo_btn.pack(side="right", padx=10, pady=5)
 
-        redo_btn = tk.Button(
+        self.redo_btn = tk.Button(
             self.submenu_frame,
             text="redo",
             **self.button_style,
             command=self.redo
         )
-        redo_btn.pack(side="right", padx=10, pady=5)
+        self.redo_btn.pack(side="right", padx=10, pady=5)
 
         
     def undo(self):
@@ -135,6 +142,23 @@ class CartView(Frame):
     def refresh(self):
         self.load_drinks()
         self.update_all_total_price()
+    
+    def update_language(self, lang_code):
+        """
+        更新 CartView 的語言，僅更新標題和按鈕文字。
+        Update the language of the CartView, focusing only on the title and buttons.
+        """
+        # 取得當前語言的字典 / Get the current language dictionary
+        ldict = self.controller.languages[lang_code]
+
+        # 更新標題文字 / Update the title label
+        self.total_price_label.config(text=f"{ldict['total']}: 0 kr")
+
+        # 更新按鈕文字 / Update button texts
+        self.VittVin_btn.config(text=ldict['back'])
+        self.shopping_cart_btn.config(text=ldict['checkout'])
+        self.undo_btn.config(text=ldict['undo'])
+        self.redo_btn.config(text=ldict['redo'])
 
 
 class DrinkCard(tk.Frame):
