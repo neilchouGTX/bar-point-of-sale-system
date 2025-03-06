@@ -68,6 +68,13 @@ class OrderViewNew(Frame):
         )
         self.shopping_cart_btn.pack(side="right", padx=10, pady=5)
 
+        self.remove_item_btn = tk.Button(
+            self.submenu_frame,
+            text="Remove Item",
+            **self.button_style
+        )
+        self.remove_item_btn.pack(side="right", padx=10, pady=5)
+
     def create_main_area(self):
         # main scrollable area
         self.canvas = tk.Canvas(self, bg="white")
@@ -238,8 +245,11 @@ class DrinkCard(tk.Frame):
         print("on_drop", x, y)
         # 取得 OrderViewNew 中购物车按钮的引用（请确保在 OrderViewNew 中保存了该按钮，例如 self.shopping_cart_btn）
         order_view = self.controller.view.frames["OrderViewNew"]
-        print(type(order_view))
-        if order_view and hasattr(order_view, "shopping_cart_btn"):
+        if not order_view:
+            print("OrderViewNew not found")
+            return
+        dropped_on_cart = False
+        if hasattr(order_view, "shopping_cart_btn"):
             cart_btn = order_view.shopping_cart_btn
             btn_x = cart_btn.winfo_rootx()
             btn_y = cart_btn.winfo_rooty()
@@ -251,8 +261,23 @@ class DrinkCard(tk.Frame):
                 self.increase_quantity()
                 # 同时，可以触发控制器刷新购物车视图，例如：
                 self.controller.cart_refresh()
-        else:
-            print("No shopping cart button found in OrderViewNew")
+                dropped_on_cart = True
+        if hasattr(order_view, "remove_item_btn"):
+            print("remove_item_btn")
+            remove_btn = order_view.remove_item_btn
+            btn_x = remove_btn.winfo_rootx()
+            btn_y = remove_btn.winfo_rooty()
+            btn_width = remove_btn.winfo_width()
+            btn_height = remove_btn.winfo_height()
+            # 判断是否释放在购物车按钮范围内
+            if btn_x <= x <= btn_x + btn_width and btn_y <= y <= btn_y + btn_height:
+                # 放下时增加数量：这里调用 increase_quantity 即可
+                self.decrease_quantity()
+                # 同时，可以触发控制器刷新购物车视图，例如：
+                self.controller.cart_refresh()
+                dropped_on_cart = True
+        if not dropped_on_cart:
+            print("Dropped outside valid buttons")
 
     def increase_quantity(self):
         self.quantity = self.controller.get_cart_quantity(self.drink_data)
