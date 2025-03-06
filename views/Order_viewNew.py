@@ -207,7 +207,7 @@ class DrinkCard(tk.Frame):
         self.bind("<ButtonPress-1>", self.on_start_drag)
         self.bind("<B1-Motion>", self.on_drag)
         self.bind("<ButtonRelease-1>", self.on_drop)
-        # 如果内部的子控件（如标签、按钮）也需要触发拖拽，可以为它们绑定同样的事件
+        # drag and drop for child widgets
         for child in self.winfo_children():
             child.bind("<ButtonPress-1>", self.on_start_drag)
             child.bind("<B1-Motion>", self.on_drag)
@@ -216,22 +216,17 @@ class DrinkCard(tk.Frame):
         self._drag_data = {"x": 0, "y": 0}
 
     def on_start_drag(self, event):
-        # 记录初始点击的位置（相对于当前控件）
         self._drag_data["x"] = event.x
         self._drag_data["y"] = event.y
-        # 建立預覽視窗
         self._drag_window = tk.Toplevel(self)
         self._drag_window.overrideredirect(True)  # 無邊框
         self._drag_window.attributes("-alpha", 0.5)  # 設定半透明 (50%透明)
-        # 放入圖片（假設 self.image 為已建立的 ImageTk.PhotoImage）
         preview_label = tk.Label(self._drag_window, image=self.image, bg="white")
         preview_label.pack()
-        # 初始定位到鼠標所在位置
         self._drag_window.geometry(f"+{event.x_root}+{event.y_root}")
 
     def on_drag(self, event):
         if self._drag_window:
-            # 更新預覽視窗的位置
             new_x = event.x_root - self._drag_data["x"]
             new_y = event.y_root - self._drag_data["y"]
             self._drag_window.geometry(f"+{new_x}+{new_y}")
@@ -240,10 +235,8 @@ class DrinkCard(tk.Frame):
         if self._drag_window:
             self._drag_window.destroy()
             self._drag_window = None
-        # 获取当前鼠标在屏幕中的坐标
         x, y = event.x_root, event.y_root
         print("on_drop", x, y)
-        # 取得 OrderViewNew 中购物车按钮的引用（请确保在 OrderViewNew 中保存了该按钮，例如 self.shopping_cart_btn）
         order_view = self.controller.view.frames["OrderViewNew"]
         if not order_view:
             print("OrderViewNew not found")
@@ -255,11 +248,8 @@ class DrinkCard(tk.Frame):
             btn_y = cart_btn.winfo_rooty()
             btn_width = cart_btn.winfo_width()
             btn_height = cart_btn.winfo_height()
-            # 判断是否释放在购物车按钮范围内
             if btn_x <= x <= btn_x + btn_width and btn_y <= y <= btn_y + btn_height:
-                # 放下时增加数量：这里调用 increase_quantity 即可
                 self.increase_quantity()
-                # 同时，可以触发控制器刷新购物车视图，例如：
                 self.controller.cart_refresh()
                 dropped_on_cart = True
         if hasattr(order_view, "remove_item_btn"):
@@ -269,11 +259,8 @@ class DrinkCard(tk.Frame):
             btn_y = remove_btn.winfo_rooty()
             btn_width = remove_btn.winfo_width()
             btn_height = remove_btn.winfo_height()
-            # 判断是否释放在购物车按钮范围内
             if btn_x <= x <= btn_x + btn_width and btn_y <= y <= btn_y + btn_height:
-                # 放下时增加数量：这里调用 increase_quantity 即可
                 self.decrease_quantity()
-                # 同时，可以触发控制器刷新购物车视图，例如：
                 self.controller.cart_refresh()
                 dropped_on_cart = True
         if not dropped_on_cart:
