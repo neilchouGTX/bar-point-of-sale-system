@@ -149,6 +149,8 @@ class OrderViewNew(Frame):
 
 
 class DrinkCard(tk.Frame):
+    MAX_LENGTH = 12
+
     def __init__(self, parent, drink_data, controller):
         super().__init__(parent, bg="#B3E5FC", bd=2, relief="solid")
         self.controller = controller
@@ -173,17 +175,18 @@ class DrinkCard(tk.Frame):
         # image Label
         self.image_label = tk.Label(self, image=self.image, bg="#B3E5FC")
         self.image_label.pack(pady=5)
+        print(type(self.MAX_LENGTH))
 
         # alcohol name Label
         self.info_label = tk.Label(
             self,
-            text=f"Name: {drink_data.namn}\n"
-                 f"Producer: {drink_data.producent}\n"
-                 f"Country: {drink_data.ursprunglandnamn}\n"
-                 f"Type: {drink_data.varugrupp}\n"
-                 f"Alc.: {drink_data.alkoholhalt}\n"
-                 f"Packaging: {drink_data.forpackning}\n"
-                 f"Price: {drink_data.prisinklmoms} kr",
+            text=f"Name: {drink_data.namn[0:self.MAX_LENGTH]}...\n"
+                 f"Producer: {drink_data.producent[0:self.MAX_LENGTH]}\n"
+                 f"Country: {drink_data.ursprunglandnamn[0:self.MAX_LENGTH]}\n"
+                 f"Type: {drink_data.varugrupp[0:self.MAX_LENGTH]}\n"
+                 f"Alc.: {drink_data.alkoholhalt[0:self.MAX_LENGTH]}\n"
+                 f"Packaging: {drink_data.forpackning[:self.MAX_LENGTH]}\n"
+                 f"Price: {drink_data.prisinklmoms[:self.MAX_LENGTH]} kr",
             justify="left",
             bg="#B3E5FC"
         )
@@ -281,13 +284,13 @@ class DrinkCard(tk.Frame):
 
     def update_language(self, lang_code):
         self.current_language = lang_code
-        self.info_label.config(text=f"{self.languages[lang_code]['name']}: {self.drink_data.namn}\n"
-                                    f"{self.languages[lang_code]['producer']}: {self.drink_data.producent}\n"
-                                    f"{self.languages[lang_code]['country']}: {self.drink_data.ursprunglandnamn}\n"
-                                    f"{self.languages[lang_code]['type']}: {self.drink_data.varugrupp}\n"
-                                    f"{self.languages[lang_code]['alc']}: {self.drink_data.alkoholhalt}\n"
-                                    f"{self.languages[lang_code]['packaging']}: {self.drink_data.forpackning}\n"
-                                    f"{self.languages[lang_code]['price']}: {self.drink_data.prisinklmoms} kr")
+        self.info_label.config(text=f"{self.languages[lang_code]['name']}: {self.drink_data.namn[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['producer']}: {self.drink_data.producent[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['country']}: {self.drink_data.ursprunglandnamn[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['type']}: {self.drink_data.varugrupp[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['alc']}: {self.drink_data.alkoholhalt[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['packaging']}: {self.drink_data.forpackning[:self.MAX_LENGTH]}\n"
+                                    f"{self.languages[lang_code]['price']}: {self.drink_data.prisinklmoms[:self.MAX_LENGTH]} kr")
         self.info_label.update()
 
     
