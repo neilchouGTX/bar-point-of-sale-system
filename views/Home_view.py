@@ -30,9 +30,9 @@ class HomeView(Frame):
         login_btns = Frame(self, bg="#A7C7E7")
         login_btns.pack(side="top", padx=10, pady=10, fill="x")
 
-        # In the main screen, the Order Now and VIP blocks
-        self.order_btn = tk.Button(login_btns, text="Order Now", **self.button_style, width=10, command=lambda: self.changePage("OrderView"))
-        self.order_btn.pack(side="top", padx=10, pady=10)
+        # # In the main screen, the Order Now and VIP blocks
+        # self.order_btn = tk.Button(login_btns, text="Order Now", **self.button_style, width=10, command=lambda: self.changePage("OrderView"))
+        # self.order_btn.pack(side="top", padx=10, pady=10)
 
         self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
 

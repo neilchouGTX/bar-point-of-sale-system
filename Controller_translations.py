@@ -19,9 +19,10 @@ languages = {
         'staff_button': "Staff",
 
         # For Order_viewNew
-        'vitt_vin': "Vitt vin",
-        'okryddad_sprit': "Okryddad sprit",
-        'cognac': "Cognac",
+        'all': "All",
+        'under300': "Under 300kr",
+        'price300to1000': "300-1000kr",
+        'above1000': "Above 1000kr",
         'shopping_cart': "Shopping Cart",
         'name': "Name",
         'producer': "Producer",
@@ -86,9 +87,10 @@ languages = {
         'staff_button': "員工",
 
         # For Order_viewNew
-        'vitt_vin': "白葡萄酒",
-        'okryddad_sprit': "無調味烈酒",
-        'cognac': "干邑白蘭地",
+        'all': "全部",
+        'under300': "300kr以下",
+        'price300to1000': "300-1000kr",
+        'above1000': "1000kr以上",
         'shopping_cart': "購物車",
         'name': "名稱",
         'producer': "生產商",
@@ -152,9 +154,10 @@ languages = {
         'staff_button': "Personal",
 
         # For Order_viewNew
-        'vitt_vin': "Vitt vin",
-        'okryddad_sprit': "Okryddad sprit",
-        'cognac': "Cognac",
+        'all': "Alla",
+        'under300': "Under 1000kr",
+        'price300to1000': "300-1000kr",
+        'above1000': "Över 1000kr",
         'shopping_cart': "Varukorg",
         'name': "Namn",
         'producer': "Producent",

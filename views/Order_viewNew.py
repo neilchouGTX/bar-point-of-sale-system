@@ -18,7 +18,8 @@ class OrderViewNew(Frame):
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style2(self)
 
-        self.category = "Cognac"  
+        self.price = 0
+        self.category = None  
         self.canvas = None
         self.scroll_y = None
         self.frame = None
@@ -36,29 +37,37 @@ class OrderViewNew(Frame):
         self.submenu_frame.grid(row=0, column=0, sticky="ew")
 
         # for category in ["Vitt vin", "Okryddad sprit"]:
-        VittVin_btn = tk.Button(
+        All_btn = tk.Button(
             self.submenu_frame, 
-            text="Vitt vin",
+            text="All",
             **self.button_style,
-            command=lambda: self.refresh("Vitt vin")
+            command=lambda: self.refresh(0, "alc")
         )
-        VittVin_btn.pack(side="left", padx=10, pady=5)
+        All_btn.pack(side="left", padx=10, pady=5)
 
-        OkryddadSprit_btn = tk.Button(
+        under_300_btn = tk.Button(
             self.submenu_frame, 
-            text="Okryddad sprit", 
+            text="Under 300kr", 
             **self.button_style,
-            command=lambda: self.refresh("Okryddad sprit")
+            command=lambda: self.refresh(300, "alc")
         )
-        OkryddadSprit_btn.pack(side="left", padx=10, pady=5)
+        under_300_btn.pack(side="left", padx=10, pady=5)
 
-        Cognac_btn = tk.Button(
+        greater_1000_btn = tk.Button(
             self.submenu_frame, 
-            text="Cognac",
+            text="300-1000",
             **self.button_style,
-            command=lambda: self.refresh("Cognac")
+            command=lambda: self.refresh(1000, "alc")
         )
-        Cognac_btn.pack(side="left", padx=10, pady=5)
+        greater_1000_btn.pack(side="left", padx=10, pady=5)
+
+        greater_1000_btn = tk.Button(
+            self.submenu_frame, 
+            text="1000kr Up",
+            **self.button_style,
+            command=lambda: self.refresh(1001, "alc")
+        )
+        greater_1000_btn.pack(side="left", padx=10, pady=5)
 
         self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
@@ -104,6 +113,15 @@ class OrderViewNew(Frame):
                     else:  # Windows/Linux
                         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+    def createDrinkCard(self, drink):
+        card = DrinkCard(self.inner_frame, drink, self.controller)
+        card.grid(row=self.row, column=self.col, padx=10, pady=10)
+        self.col += 1
+        if self.col > 4:  # Maximum 5 cards in a row
+            self.col = 0
+            self.row += 1
+        self.items_count += 1
+    
     def load_drinks(self):
         """ loading drinks data into inner_frame """
         # Clear existing cards
@@ -112,22 +130,31 @@ class OrderViewNew(Frame):
 
         # Get drinks data from controller
         drinks_data = self.controller.getBeerDataFromMenu()
-        row, col = 0, 0
-        items_count = 0
+        self.row, self.col = 0, 0
+        self.items_count = 0
         for drink in drinks_data:
-            card = DrinkCard(self.inner_frame, drink, self.controller)
-            card.grid(row=row, column=col, padx=10, pady=10)
-            col += 1
-            if col > 4:  # Maximum 5 cards in a row
-                col = 0
-                row += 1
-            items_count += 1
-            if items_count > 20:
+            
+            if self.items_count > 50:
                 break
+            if self.price == 300 and float(drink.prisinklmoms) < 300:
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 1000 and 300 <= float(drink.prisinklmoms) < 1000:
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 1001 and float(drink.prisinklmoms) >= 1000:
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 0:
+                self.createDrinkCard(drink)
+                continue
+            else:
+                continue
 
 
-    def refresh(self, new_category):
+    def refresh(self, price, new_category=None):
         """ Switch category and reload data """
+        self.price = price
         if(new_category != None):
             self.category = new_category
         self.load_drinks()
@@ -135,9 +162,10 @@ class OrderViewNew(Frame):
     #更新點單视图的语言 / Update the language of the order view
     def update_language(self, lang_code):
         self.current_language = lang_code
-        self.submenu_frame.winfo_children()[0].config(text=self.languages[lang_code]['vitt_vin'])
-        self.submenu_frame.winfo_children()[1].config(text=self.languages[lang_code]['okryddad_sprit'])
-        self.submenu_frame.winfo_children()[2].config(text=self.languages[lang_code]['cognac'])
+        self.submenu_frame.winfo_children()[0].config(text=self.languages[lang_code]['all'])
+        self.submenu_frame.winfo_children()[1].config(text=self.languages[lang_code]['under300'])
+        self.submenu_frame.winfo_children()[2].config(text=self.languages[lang_code]['price300to1000'])
+        self.submenu_frame.winfo_children()[3].config(text=self.languages[lang_code]['above1000'])
         self.shopping_cart_btn.config(text=self.languages[lang_code]['shopping_cart'])
         
         for widget in self.inner_frame.winfo_children():
@@ -175,7 +203,6 @@ class DrinkCard(tk.Frame):
         # image Label
         self.image_label = tk.Label(self, image=self.image, bg="#B3E5FC")
         self.image_label.pack(pady=5)
-        print(type(self.MAX_LENGTH))
 
         # alcohol name Label
         self.info_label = tk.Label(
@@ -256,7 +283,6 @@ class DrinkCard(tk.Frame):
                 self.controller.cart_refresh()
                 dropped_on_cart = True
         if hasattr(order_view, "remove_item_btn"):
-            print("remove_item_btn")
             remove_btn = order_view.remove_item_btn
             btn_x = remove_btn.winfo_rootx()
             btn_y = remove_btn.winfo_rooty()
