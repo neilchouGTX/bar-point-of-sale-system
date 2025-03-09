@@ -307,3 +307,22 @@ class Controller():
         theBeerStaticData=self.beerModel.getDataByIds(ids)
         #print(theBeerStaticData)
         return theBeerStaticData
+    
+    def getBeerDataFromVIPMenu(self,):
+        menuData=self.menuModel.getVIPData()
+        ids=[]
+        for theData in menuData:
+            ids.append(theData.id.strip())
+        
+        print(ids)
+        
+        theBeerStaticData=self.beerModel.getDataByIds(ids)
+        #print(theBeerStaticData)
+        return theBeerStaticData
+    
+    def addItemToVIPMenu(self,menuItem):
+        theItem=menuItem
+        self.menuModel.addVIPItem(theItem)
+    
+    def removeItemFromVIPMenu(self,index):
+        self.menuModel.removeVIPItem(index)

@@ -5,6 +5,7 @@ from styles.style_config import *
 import tkinter.simpledialog as sd
 import tkinter.messagebox as mbox
 from Controller_translations import languages
+from Model import MenuItem
 
 class StaffView(tk.Frame):
     def __init__(self, root, controller):
@@ -38,7 +39,7 @@ class StaffView(tk.Frame):
         nav_frame.grid(row=1, column=0, columnspan=4, pady=10)
 
         self.buttons = {}
-        for idx, page in enumerate(["order", "stock", "reservation", "menu"]):
+        for idx, page in enumerate(["order", "stock", "reservation", "menu", "VIP_menu"]):
             btn = tk.Button(nav_frame, text=page.capitalize(), **self.button_style,
                             command=partial(self.switch_page, page))
             btn.grid(row=0, column=idx, padx=10)
@@ -85,6 +86,7 @@ class StaffView(tk.Frame):
         # Reset columns and heading for treeview
         self.table["columns"] = ()
         self.table.heading("#0", text="", anchor="w")
+        self.table.unbind("<Button-1>")
 
         if page == "order":
             self.load_orders()
@@ -94,6 +96,8 @@ class StaffView(tk.Frame):
             self.load_reservations()
         elif page == "menu":
             self.load_menu()
+        elif page == "VIP_menu":
+            self.load_VIP_Menu()
 
     def load_orders(self):
         "Populate table with order data."
@@ -203,10 +207,11 @@ class StaffView(tk.Frame):
 
         menu_data = self.controller.getBeerDataFromMenu()
         for item in menu_data:
-            self.table.insert("", "end", values=(item.nr, item.namn, ""), tags=("action_row",))
+            self.table.insert("", "end", values=(item.nr, item.namn, "Remove"), tags=("action_row",))
 
-        for iid in self.table.get_children():
-            self.add_action_buttons(iid, ["remove"], self.menu_action)
+        self.table.bind("<Button-1>", self.on_Menu_Remove_click)
+        ##for iid in self.table.get_children():
+            #self.action_buttons(iid, ["remove"], self.menu_action)
 
         # Add menu addition frame below the table
         add_frame = tk.Frame(self.table_frame, bg="white")
@@ -223,7 +228,65 @@ class StaffView(tk.Frame):
 
         add_btn = tk.Button(add_frame, text="Add", **self.button_style, command=self.add_menu_item)
         add_btn.pack(pady=10)
+    def load_VIP_Menu(self):
+        """Populate table with menu data from dutchman_menu.json and add menu addition section."""
+        columns = ("id", "name", "action")
+        self.table["columns"] = columns
+        for col in columns:
+            self.table.heading(col, text=col.capitalize(), anchor="w")
+            self.table.column(col, width=150, anchor="w")
 
+        menu_data = self.controller.getBeerDataFromVIPMenu()
+        for item in menu_data:
+            self.table.insert("", "end", values=(item.nr, item.namn, "Remove"), tags=("action_row",))
+
+        self.table.bind("<Button-1>", self.on_VIP_Menu_Remove_click)
+        ##for iid in self.table.get_children():
+            #self.action_buttons(iid, ["remove"], self.menu_action)
+
+        # Add menu addition frame below the table
+        add_frame = tk.Frame(self.table_frame, bg="white")
+        add_frame.pack(pady=10)
+
+        tk.Label(add_frame, text="Add Menu Item", font=self.custom_font, bg="white").pack(pady=5)
+
+        # Combobox for selecting beverage
+        beers = self.controller.beerModel.staticData
+        print("Number of beers available:", len(beers))  # Debug: Check beer data
+        values = [f"{beer.nr}, {beer.namn}" for beer in beers[:20]]  # Limit to first 20
+        self.combo = ttk.Combobox(add_frame, values=values, width=50)
+        self.combo.pack(padx=10, pady=5)
+
+        add_btn = tk.Button(add_frame, text="Add", **self.button_style, command=self.add_VIP_menu_item)
+        add_btn.pack(pady=10)
+
+    def on_Menu_Remove_click(self,event):
+        
+        selected_item = self.table.identify_row(event.y)  # 獲取被點擊的行 ID
+        selected_column = self.table.identify_column(event.x)  # 獲取被點擊的列 ID（格式為 #1, #2, #3 ...）
+
+        if selected_item and selected_column == "#3":
+            #item_values = self.table.item(selected_item, "values")  # 獲取該行的所有值
+            #id = item_values[0] 
+            #name = item_values[1]
+            index = self.table.index(selected_item)
+            self.controller.removeItemFromMenu(index)
+            self.load_page("menu")
+            #print(f"id:{id}, name:{name}")
+    
+    def on_VIP_Menu_Remove_click(self,event):
+        selected_item = self.table.identify_row(event.y)  # 獲取被點擊的行 ID
+        selected_column = self.table.identify_column(event.x)  # 獲取被點擊的列 ID（格式為 #1, #2, #3 ...）
+
+        if selected_item and selected_column == "#3":
+            #item_values = self.table.item(selected_item, "values")  # 獲取該行的所有值
+            #id = item_values[0] 
+            #name = item_values[1]
+            index = self.table.index(selected_item)
+            self.controller.removeItemFromVIPMenu(index)
+            self.load_page("VIP_menu")
+            #print(f"id:{id}, name:{name}")      
+     
     def add_menu_item(self):
         """Add a new item to the menu using the combobox selection."""
         selected = self.combo.get()
@@ -236,6 +299,23 @@ class StaffView(tk.Frame):
                 self.controller.addItemToMenu(menu_item)
                 self.load_page("menu")  # Refresh the menu page
                 mbox.showinfo("Menu Update", f"Added {namn.strip()} to menu.")
+            except Exception as e:
+                mbox.showerror("Error", f"Failed to add item: {str(e)}")
+        else:
+            mbox.showerror("Error", "Please select a beer.")
+    
+    def add_VIP_menu_item(self):
+        """Add a new item to the menu using the combobox selection."""
+        selected = self.combo.get()
+        print("Selected value:", selected)  # Debug: Check combobox selection
+        if selected:
+            try:
+                nr, namn = selected.split(", ", 1)
+                print("Parsed - nr:", nr, "namn:", namn)  # Debug: Check split result
+                menu_item = MenuItem(nr.strip(), namn.strip())
+                self.controller.addItemToVIPMenu(menu_item)
+                self.load_page("VIP_menu")  # Refresh the menu page
+                mbox.showinfo("VIP Menu Update", f"Added {namn.strip()} to menu.")
             except Exception as e:
                 mbox.showerror("Error", f"Failed to add item: {str(e)}")
         else:
