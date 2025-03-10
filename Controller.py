@@ -8,6 +8,7 @@ class Controller():
         self.languages = languages
         ## Model
         self.userModel = UserModel()
+        self.vipModel = VIPModel()
         self.beerModel = BeerModel()
         self.cartModel = CartModel()
         self.orderModel = OrderModel()
@@ -46,32 +47,83 @@ class Controller():
         else:
             print("Combo box not found!")
 
+    # def handle_login(self):
+    #     """
+    #     處理登入邏輯：取得使用者類型與識別資訊，
+    #     若輸入有效，則透過 model 執行 login，並更新視圖以顯示登出狀態；
+    #     否則顯示錯誤訊息。
+    #     """
+    #     user_type = self.login_view.get_selected_user_type()
+    #     identifier = self.login_view.get_identifier_input()
+    #     if identifier.strip():
+    #         self.userModel.login(user_type, identifier)
+    #         self.login_view.show_logout_view(user_type, identifier)
+    #         if user_type == "Staff":
+    #             self.show_staff_page()
+    #         if user_type == "VIP":
+    #             self.show_VIP_page()
+
+    #     else:
+    #         self.login_view.show_error_message("請輸入有效資訊 / Please enter valid information.")
+    
+    # def handle_logout(self):
+    #     """
+    #     處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面。
+    #     """
+    #     self.userModel.logout()
+    #     self.login_view.show_login_view()
     def handle_login(self):
         """
-        處理登入邏輯：取得使用者類型與識別資訊，
-        若輸入有效，則透過 model 執行 login，並更新視圖以顯示登出狀態；
-        否則顯示錯誤訊息。
+        處理登入邏輯：
+        如果是 VIP，檢查電話號碼是否有效；若成功則登入並進入 VIPView。
+        如果是 Staff，暫時直接登入並進入 StaffView。
+        如果識別資訊為空或驗證失敗，顯示錯誤訊息。
+        Handle login logic:
+        - If user_type is VIP, verify phone number. If successful, go to VIPView.
+        - If user_type is Staff, proceed to StaffView (for now).
+        - If identifier is invalid or verification fails, show error.
         """
         user_type = self.login_view.get_selected_user_type()
-        identifier = self.login_view.get_identifier_input()
-        if identifier.strip():
-            self.userModel.login(user_type, identifier)
-            self.login_view.show_logout_view(user_type, identifier)
-            if user_type == "Staff":
-                self.show_staff_page()
-            if user_type == "VIP":
-                self.show_VIP_page()
+        identifier = self.login_view.get_identifier_input().strip()
 
-        else:
+        # 檢查是否有輸入識別資訊 / Check if identifier is not empty
+        if not identifier:
             self.login_view.show_error_message("請輸入有效資訊 / Please enter valid information.")
-    
+            return
+        
+        if user_type == "VIP":
+            # 透過 vipModel 驗證手機號碼
+            # Verify phone number via vipModel
+            success = self.vipModel.verify_login_by_phone(identifier)
+            if success:
+                # 成功後紀錄 VIP 登入資訊，並跳轉至 VIPView
+                self.login_view.show_logout_view("VIP", identifier)
+                self.show_VIP_page()
+            else:
+                # 顯示錯誤提示
+                self.login_view.show_error_message("電話號碼錯誤 / Incorrect phone number.")
+        else:
+            # Staff：目前直接登入並進入 StaffView。可依需求擴充檢驗員工ID
+            self.userModel.login("Staff", identifier)
+            self.login_view.show_logout_view("Staff", identifier)
+            self.show_staff_page()
+
     def handle_logout(self):
         """
-        處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面。
+        處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面
+        Handle logout logic: call model.logout and update the view to show login page
         """
-        self.userModel.logout()
+        self.userModel.logout()    # or self.vipModel.logout() if you like to unify
+        self.vipModel.logout()
         self.login_view.show_login_view()
     
+    def handle_non_member(self):
+        """
+        處理非會員操作，跳轉到首頁
+        Handle non-member action and navigate to HomeView
+        """
+        self.view.show_frame("HomeView")
+        
     def handle_language_change(self, event=None):
         """
         處理語言切換事件，更新全局語言並通知視圖更新
@@ -124,16 +176,16 @@ class Controller():
     def displayView(self):
         self.view.display()
     
-    def Login(self, username, password, is_staff=False):
-        userData = self.userModel.checkLogin(username, password)
-        if userData is not None:
-            print("Login success")
-            if is_staff:
-                self.show_staff_page()
-            else:
-                self.view.show_frame("OrderView")
-        else:
-            print("Login fail")
+    # def Login(self, username, password, is_staff=False):
+    #     userData = self.userModel.checkLogin(username, password)
+    #     if userData is not None:
+    #         print("Login success")
+    #         if is_staff:
+    #             self.show_staff_page()
+    #         else:
+    #             self.view.show_frame("OrderView")
+    #     else:
+    #         print("Login fail")
     
     def getMenuData(self, varugrupp):
         theData = self.beerModel.getDataByCategory(varugrupp)
@@ -252,7 +304,7 @@ class Controller():
         self.view.show_frame("StaffView")
     
     def show_VIP_page(self):
-        self.view.show_frame("OrderViewNew")
+        self.view.show_frame("OrderViewVIP")
 
     def get_cart_quantity(self, drink_data):
         return self.cartModel.get_quantity(drink_data)
