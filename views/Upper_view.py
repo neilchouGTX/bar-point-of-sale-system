@@ -122,7 +122,9 @@ class UpperView(Frame):
     def adjust_title(self, event):
         window_width = event.width
 
-        if window_width < 700:
+        if window_width < 500:
+            font_size = 24
+        elif 500 <= window_width < 800:
             font_size = 32
         else:
             font_size = 48
