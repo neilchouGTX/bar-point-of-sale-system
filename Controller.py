@@ -143,7 +143,7 @@ class Controller():
         """讓 OrderViewNew 重新加載新分類的數據"""
         order_view = self.view.frames.get("OrderViewNew")
         if order_view:
-            order_view.refresh(0, "alc")
+            order_view.refresh(0, "all")
 
     def refreshSendOrderView(self):
         send_order_view = self.view.frames.get("SendOrderView")

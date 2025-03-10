@@ -38,41 +38,5 @@
     {
         "id": "999999001",
         "name": "Cheese Burger"
-    },
-    {
-        "id": "999999002",
-        "name": "French Fries"
-    },
-    {
-        "id": "999999003",
-        "name": "Onion Rings"
-    },
-    {
-        "id": "999999004",
-        "name": "Chicken Wings"
-    },
-    {
-        "id": "999999005",
-        "name": "Mozzarella Sticks"
-    },
-    {
-        "id": "999999007",
-        "name": "Hot Dog"
-    },
-    {
-        "id": "999999006",
-        "name": "Fish and Chips"
-    },
-    {
-        "id": "999999008",
-        "name": "Nachos with Cheese"
-    },
-    {
-        "id": "999999009",
-        "name": "Smoked Meat Sandwich"
-    },
-    {
-        "id": "999999010",
-        "name": "Fried Calamari"
     }
 ]
