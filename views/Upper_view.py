@@ -8,6 +8,14 @@ import json
 
 from Controller_translations import languages
 
+
+"""
+I expect to update the Upperview after VIP login in 3.11 
+
+--Shuai Guo
+"""
+
+
 class UpperView(Frame):
     def __init__(self,root,controller):
         super().__init__(root)

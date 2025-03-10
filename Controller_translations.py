@@ -71,7 +71,17 @@ languages = {
         # For Cart_view
         'checkout': "Checkout",
         'undo': "Undo",
-        'redo': "Redo"
+        'redo': "Redo",
+
+        # For Home_VIP_view
+        'vip_home_welcome': "Welcome!",
+        'vip_home_phone': "Phone number:",
+        'vip_home_balance': "Your balance:",
+        'vip_home_button_order': "VIP Order Now!!!",
+        'vip_home_button_self_service': "Self-service Drinks",
+        'vip_home_button_logout': "Logout",
+        'vip_home_self_service_msg': "Your code is: {code} .\n Please go to a nearby refrigerator and enter the code. \n The drinks you take out will be automatically settled. \n The code is valid for 10 minutes."
+
     },
     '中文': {
         # For Login_view
@@ -141,7 +151,16 @@ languages = {
 
         'checkout': "結帳",
         'undo': "撤銷",
-        'redo': "重做"
+        'redo': "重做",
+
+        #For Home_VIP_view
+        'vip_home_welcome': "歡迎！",
+        'vip_home_phone': "電話號碼：",
+        'vip_home_balance': "餘額：",
+        'vip_home_button_order': "VIP 立即點單!!!",
+        'vip_home_button_self_service': "自助取飲料",
+        'vip_home_button_logout': "登出",
+        'vip_home_self_service_msg': "您的密碼是：{code}。\n 請前往附近的冰箱並輸入此密碼，您取出的飲料將自動結算。\n 此密碼有效期為 10 分鐘。"
     },
     'Svenska': {
         # For Login_view
@@ -211,6 +230,15 @@ languages = {
 
         'checkout':"Kassa",
         'undo': "Ångra",
-        'redo': "Gör om"
+        'redo': "Gör om",
+
+        #For Home_VIP_view
+        'vip_home_welcome': "Välkommen!",
+        'vip_home_phone': "Telefonnummer:",
+        'vip_home_balance': "Ditt saldo:",
+        'vip_home_button_order': "VIP Beställ Nu!!!",
+        'vip_home_button_self_service': "Självbetjäningsdrycker",
+        'vip_home_button_logout': "Logga ut",
+        'vip_home_self_service_msg': "Din kod är: {code}. \n Gå till ett kylskåp i närheten och ange koden. \n Drycker du tar ut kommer att avräknas automatiskt. \n Koden gäller i 10 minuter."
     }
 }

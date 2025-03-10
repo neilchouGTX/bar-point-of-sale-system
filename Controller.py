@@ -98,7 +98,8 @@ class Controller():
             if success:
                 # 成功後紀錄 VIP 登入資訊，並跳轉至 VIPView
                 self.login_view.show_logout_view("VIP", identifier)
-                self.show_VIP_page()
+                #self.show_VIP_page()
+                self.show_frame("HomeVIPView")
             else:
                 # 顯示錯誤提示
                 self.login_view.show_error_message("電話號碼錯誤 / Incorrect phone number.")
