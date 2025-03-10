@@ -27,7 +27,7 @@ class UpperView(Frame):
         self.upper_home_btn = tk.Button(self, text="Home", **self.button_style, command=lambda: self.changePage("HomeView"))
         self.upper_home_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: (self.changePage("OrderViewVIP"), self.controller.refreshOrderView(None)))
+        self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder()))
         self.upper_my_orders_btn.grid(row=0, column=1, padx=10, pady=10)
 
         # --TO DO--

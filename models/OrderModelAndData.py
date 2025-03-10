@@ -100,3 +100,40 @@ class OrderModel:
         self.saveData()
 
         print(f"Order for table {table_number} with total price {total_price:.2f} has been saved.")
+
+    def merge_orders_to_objects(self):
+        with open(self.db_path, "r", encoding="utf-8") as file:
+            orders = json.load(file)
+        
+        merged_orders = {}
+
+        for order in orders:
+            table_number = order["tableNumber"]
+
+            if table_number not in merged_orders:
+                merged_orders[table_number] = {
+                    "totalPrice": 0,
+                    "orderItems": {}
+                }
+
+            merged_orders[table_number]["totalPrice"] += order["totalPrice"]
+
+            for item in order["orderItems"]:
+                item_id = item["id"]
+                if item_id in merged_orders[table_number]["orderItems"]:
+                    # existing item, add amount
+                    merged_orders[table_number]["orderItems"][item_id].amount += item["amount"]
+                else:
+                    # new item, create OrderItem object
+                    merged_orders[table_number]["orderItems"][item_id] = OrderItem(item["id"], item["amount"], item["price"])
+
+        merged_orders_list = [
+            Order(
+                table_number=table,
+                orderItems=list(details["orderItems"].values()),
+                totalPrice=details["totalPrice"]
+            )
+            for table, details in merged_orders.items()
+        ]
+        
+        return merged_orders_list

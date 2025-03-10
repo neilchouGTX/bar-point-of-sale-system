@@ -16,6 +16,7 @@ class Controller():
         self.menuModel = MenuModel()
         # For demonstration, initialize a dummy orders list
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
+        self.table_number = -1
 
         ## 全局语言设置 / Global language setting
         self.current_language = "English"
@@ -194,8 +195,11 @@ class Controller():
     def refreshOrderView(self, category):
         """讓 OrderViewNew 重新加載新分類的數據"""
         order_view = self.view.frames.get("OrderViewNew")
+        order_view_VIP = self.view.frames.get("OrderViewVIP")
         if order_view:
             order_view.refresh(0, "all")
+        if order_view_VIP:
+            order_view_VIP.refresh(0, "all")
 
     def refreshSendOrderView(self):
         send_order_view = self.view.frames.get("SendOrderView")
@@ -335,10 +339,20 @@ class Controller():
         if not cart_data:
             print("Cart is empty!")
             return
+        self.table_number = table_number
         self.orderModel.add_order(table_number, cart_data)
         self.cartModel.clear_cart()
         self.cart_refresh()
         self.refreshSendOrderView()
+    
+    def refreshMyOrder(self):
+        myOrderView = self.view.frames.get("MyOrderView")
+        if myOrderView:
+            myOrderView.refresh()
+    def get_table_number(self):
+        return self.table_number
+    def get_my_orders(self):
+        return self.orderModel.merge_orders_to_objects()
 
 
     def addItemToMenu(self,menuItem):

@@ -38,12 +38,12 @@ class HomeView(Frame):
 
         self.order_btn.pack(side="top", padx=10, pady=10)
         
-        self.login_btn = tk.Button(login_btns, text="Staff Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
+        self.login_btn = tk.Button(login_btns, text="Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
         self.login_btn.pack(side="top", padx=10, pady=10)
 
-        self.login_btn = tk.Button(login_btns, text="Customer Login", **self.button_style,
-                                   width=10, command=lambda: self.changePage("LoginView"))
-        self.login_btn.pack(side="top", padx=10, pady=10)
+        # self.login_btn = tk.Button(login_btns, text="Customer Login", **self.button_style,
+        #                            width=10, command=lambda: self.changePage("LoginView"))
+        # self.login_btn.pack(side="top", padx=10, pady=10)
 
 
     def changePage(self, page_name):

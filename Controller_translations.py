@@ -71,7 +71,11 @@ languages = {
         # For Cart_view
         'checkout': "Checkout",
         'undo': "Undo",
-        'redo': "Redo"
+        'redo': "Redo",
+
+        # For My_orders_view
+        'Your_Orders': "Your Orders,",
+        'Your_table_number_is': "Your table number is"
     },
     '中文': {
         # For Login_view
@@ -141,7 +145,11 @@ languages = {
 
         'checkout': "結帳",
         'undo': "撤銷",
-        'redo': "重做"
+        'redo': "重做",
+
+        # For My_orders_view
+        'Your_Orders': "您的訂單，",
+        'Your_table_number_is': "您的桌號是"
     },
     'Svenska': {
         # For Login_view
@@ -211,6 +219,10 @@ languages = {
 
         'checkout':"Kassa",
         'undo': "Ångra",
-        'redo': "Gör om"
+        'redo': "Gör om",
+
+        # For My_orders_view
+        'Your_Orders': "Dina beställningar,",
+        'Your_table_number_is': "Ditt bordnummer är"
     }
 }
