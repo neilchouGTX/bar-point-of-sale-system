@@ -203,12 +203,23 @@ class DrinkCard(tk.Frame):
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style2(self)
 
-        # Use default image if image not found
-        img_path = "images/hei.jpg"  
+        img_path_jpg = "images/" + drink_data.namn + ".jpg"
+        img_path_png = "images/" + drink_data.namn + ".png"
+        if os.path.exists(img_path_jpg):
+            img_path = img_path_jpg
+        elif os.path.exists(img_path_png):
+            img_path = img_path_png
+        else:
+            img_path = "images/no-preview.jpg"
         if os.path.exists(img_path):  
             img = Image.open(img_path)
-            img = img.resize((180, 180), Image.Resampling.LANCZOS)  # change size to fit card
-            self.image = ImageTk.PhotoImage(img)
+            display_size = (180, 180)
+            background = Image.new("RGBA", display_size, (255, 255, 255, 0))  # 白色背景，也可以改成透明(255,255,255,0)
+            img.thumbnail(display_size, Image.Resampling.LANCZOS)
+            img_x = (display_size[0] - img.size[0]) // 2
+            img_y = (display_size[1] - img.size[1]) // 2
+            background.paste(img, (img_x, img_y), mask=img if img.mode == "RGBA" else None)
+            self.image = ImageTk.PhotoImage(background)
         else:
             self.image = None 
 
