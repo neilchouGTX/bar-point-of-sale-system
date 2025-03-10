@@ -78,20 +78,21 @@ class VIPModel(UserModel):
         self.load_users()
 
     def load_users(self):
-        """從JSON檔案載入VIP使用者資料到內存中 / Load VIP user data from JSON file into memory."""
-        with open(self.data_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        pass
+        #"""從JSON檔案載入VIP使用者資料到內存中 / Load VIP user data from JSON file into memory."""
+        #with open(self.data_file, 'r', encoding='utf-8') as f:
+            #data = json.load(f)
         
         # 建立 VIPUser 物件列表
-        self.vip_users = [
-            VIPUserData(
-                user_id=user.get("user_id"),
-                credentials=user.get("credentials"),
-                password=user.get("password"),
-                phone=user.get("phone")
-            )
-            for user in data
-        ]
+        #self.vip_users = [
+            #VIPUserData(
+                #user_id=user.get("user_id"),
+                #credentials=user.get("credentials"),
+                #password=user.get("password"),
+                #phone=user.get("phone")
+            #)
+            #for user in data
+        #]
 
     def verify_login_by_phone(self, phone):
         """
