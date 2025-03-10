@@ -222,7 +222,7 @@ class StaffView(tk.Frame):
         # Combobox for selecting beverage
         beers = self.controller.beerModel.staticData
         print("Number of beers available:", len(beers))  # Debug: Check beer data
-        values = [f"{beer.nr}, {beer.namn}" for beer in beers[:20]]  # Limit to first 20
+        values = [f"{beer.nr}, {beer.namn}" for beer in beers[:30]]  # Limit to first 30
         self.combo = ttk.Combobox(add_frame, values=values, width=50)
         self.combo.pack(padx=10, pady=5)
 

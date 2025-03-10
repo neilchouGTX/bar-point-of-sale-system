@@ -69,6 +69,14 @@ class OrderViewNew(Frame):
         )
         greater_1000_btn.pack(side="left", padx=10, pady=5)
 
+        food_btn = tk.Button(
+            self.submenu_frame, 
+            text="Food",
+            **self.button_style,
+            command=lambda: self.refresh(-1, "food")
+        )
+        food_btn.pack(side="left", padx=10, pady=5)
+
         self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
             text="Shopping Cart",
@@ -133,16 +141,18 @@ class OrderViewNew(Frame):
         self.row, self.col = 0, 0
         self.items_count = 0
         for drink in drinks_data:
-            
             if self.items_count > 50:
                 break
-            if self.price == 300 and float(drink.prisinklmoms) < 300:
+            if self.category == "food" and drink.varugrupp == "Food":
                 self.createDrinkCard(drink)
                 continue
-            elif self.price == 1000 and 300 <= float(drink.prisinklmoms) < 1000:
+            elif self.price == 300 and float(drink.prisinklmoms) < 300 and drink.varugrupp != "Food":
                 self.createDrinkCard(drink)
                 continue
-            elif self.price == 1001 and float(drink.prisinklmoms) >= 1000:
+            elif self.price == 1000 and 300 <= float(drink.prisinklmoms) < 1000 and drink.varugrupp != "Food":
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 1001 and float(drink.prisinklmoms) >= 1000 and drink.varugrupp != "Food":
                 self.createDrinkCard(drink)
                 continue
             elif self.price == 0:
@@ -155,8 +165,7 @@ class OrderViewNew(Frame):
     def refresh(self, price, new_category=None):
         """ Switch category and reload data """
         self.price = price
-        if(new_category != None):
-            self.category = new_category
+        self.category = new_category
         self.load_drinks()
 
     #更新點單视图的语言 / Update the language of the order view
@@ -166,18 +175,21 @@ class OrderViewNew(Frame):
         self.submenu_frame.winfo_children()[1].config(text=self.languages[lang_code]['under300'])
         self.submenu_frame.winfo_children()[2].config(text=self.languages[lang_code]['price300to1000'])
         self.submenu_frame.winfo_children()[3].config(text=self.languages[lang_code]['above1000'])
-        self.shopping_cart_btn.config(text=self.languages[lang_code]['shopping_cart'])
+        self.submenu_frame.winfo_children()[4].config(text=self.languages[lang_code]['food'])
+        self.submenu_frame.winfo_children()[5].config(text=self.languages[lang_code]['shopping_cart'])
+        self.submenu_frame.winfo_children()[6].config(text=self.languages[lang_code]['remove_item'])
+        # self.shopping_cart_btn.config(text=self.languages[lang_code]['shopping_cart'])
         
         for widget in self.inner_frame.winfo_children():
         # 判斷是否是 DrinkCard 類型
             if isinstance(widget, DrinkCard):
-                widget.update_language(lang_code)
+                widget.update_language(lang_code, widget.drink_data.varugrupp == "Food")
 
 
 
 
 class DrinkCard(tk.Frame):
-    MAX_LENGTH = 12
+    MAX_LENGTH = 15
 
     def __init__(self, parent, drink_data, controller):
         super().__init__(parent, bg="#B3E5FC", bd=2, relief="solid")
@@ -203,23 +215,35 @@ class DrinkCard(tk.Frame):
         # image Label
         self.image_label = tk.Label(self, image=self.image, bg="#B3E5FC")
         self.image_label.pack(pady=5)
-
+        
         # alcohol name Label
-        self.info_label = tk.Label(
+        if (drink_data.varugrupp == "Food"):
+            self.info_label = tk.Label(
             self,
-            text=f"Name: {drink_data.namn[0:self.MAX_LENGTH]}...\n"
-                 f"Producer: {drink_data.producent[0:self.MAX_LENGTH]}\n"
+            text=f"Name: {drink_data.namn[0:self.MAX_LENGTH]}\n"
                  f"Country: {drink_data.ursprunglandnamn[0:self.MAX_LENGTH]}\n"
-                 f"Type: {drink_data.varugrupp[0:self.MAX_LENGTH]}\n"
-                 f"Alc.: {drink_data.alkoholhalt[0:self.MAX_LENGTH]}\n"
-                 f"Packaging: {drink_data.forpackning[:self.MAX_LENGTH]}\n"
                  f"Price: {drink_data.prisinklmoms[:self.MAX_LENGTH]} kr",
             justify="left",
             bg="#B3E5FC"
-        )
+            )
+            language_for_food = True
+        else:
+            self.info_label = tk.Label(
+                self,
+                text=f"Name: {drink_data.namn[0:self.MAX_LENGTH]}\n"
+                    f"Producer: {drink_data.producent[0:self.MAX_LENGTH]}\n"
+                    f"Country: {drink_data.ursprunglandnamn[0:self.MAX_LENGTH]}\n"
+                    f"Type: {drink_data.varugrupp[0:self.MAX_LENGTH]}\n"
+                    f"Alc.: {drink_data.alkoholhalt[0:self.MAX_LENGTH]}\n"
+                    f"Packaging: {drink_data.forpackning[:self.MAX_LENGTH]}\n"
+                    f"Price: {drink_data.prisinklmoms[:self.MAX_LENGTH]} kr",
+                justify="left",
+                bg="#B3E5FC"
+            )
+            language_for_food = False
         self.info_label.pack(pady=5)
 
-        self.update_language(self.current_language)
+        self.update_language(self.current_language, language_for_food)
 
         # Quantity adjustment area
         self.quantity_frame = tk.Frame(self, bg="#B3E5FC")
@@ -308,15 +332,28 @@ class DrinkCard(tk.Frame):
             self.quantity_label.config(text=str(self.quantity))
             self.controller.remove_drink_to_cart(self.drink_data)
 
-    def update_language(self, lang_code):
+    def update_language(self, lang_code, language_for_food):
         self.current_language = lang_code
-        self.info_label.config(text=f"{self.languages[lang_code]['name']}: {self.drink_data.namn[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['producer']}: {self.drink_data.producent[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['country']}: {self.drink_data.ursprunglandnamn[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['type']}: {self.drink_data.varugrupp[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['alc']}: {self.drink_data.alkoholhalt[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['packaging']}: {self.drink_data.forpackning[:self.MAX_LENGTH]}\n"
-                                    f"{self.languages[lang_code]['price']}: {self.drink_data.prisinklmoms[:self.MAX_LENGTH]} kr")
+        if language_for_food:
+            self.info_label.config(
+                                    justify="left",
+                                    text=f"{self.languages[lang_code]['name']:<12}{self.drink_data.namn[:self.MAX_LENGTH]:>20}\n"
+                                        f"\n"
+                                        f"\n"
+                                        f"{self.languages[lang_code]['country']:<9}{self.drink_data.ursprunglandnamn[:self.MAX_LENGTH]:>20}\n"
+                                        f"\n"
+                                        f"\n"
+                                        f"{self.languages[lang_code]['price']:<11}{self.drink_data.prisinklmoms[:self.MAX_LENGTH]:>20} kr")
+        else:
+            self.info_label.config(
+                                    justify="left",
+                                    text=f"{self.languages[lang_code]['name']:<12}{self.drink_data.namn[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['producer']:<8}{self.drink_data.producent[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['country']:<9}{self.drink_data.ursprunglandnamn[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['type']:<12}{self.drink_data.varugrupp[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['alc']:<13}{self.drink_data.alkoholhalt[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['packaging']:<7}{self.drink_data.forpackning[:self.MAX_LENGTH]:>20}\n"
+                                    f"{self.languages[lang_code]['price']:<11}{self.drink_data.prisinklmoms[:self.MAX_LENGTH]:>20} kr")
         self.info_label.update()
 
     
