@@ -28,20 +28,20 @@ class HomeView(Frame):
         user_icon = Image.open("images/user_icon.png").resize((150, 150))
         self.user_icon = ImageTk.PhotoImage(user_icon)
         user_label = tk.Label(self, image=self.user_icon, bg="#A7C7E7")
-        user_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+        user_label.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
 
         # # In the main screen, the Order Now and VIP blocks
         # self.order_btn = tk.Button(login_btns, text="Order Now", **self.button_style, width=10, command=lambda: self.changePage("OrderView"))
         # self.order_btn.pack(side="top", padx=10, pady=10)
 
-        #self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
-        #self.order_btn.pack(side="top", padx=10, pady=10)
+        self.order_btn = tk.Button(self, text="Order Now", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
+        self.order_btn.place(relx=0.5, rely=0.45, anchor=tk.CENTER)
         
-        self.staff_login_btn = tk.Button(self, text="Staff Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
+        self.staff_login_btn = tk.Button(self, text="Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
         self.staff_login_btn.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
-        self.customer_login_btn = tk.Button(self, text="Customer Login", **self.button_style,
-                                   width=10, command=lambda: self.changePage("LoginView"))
+        self.customer_login_btn = tk.Button(self, text="VIP", **self.button_style,
+                                   width=10, command=lambda:(self.changePage("OrderViewVIP"),self.controller.refreshOrderView(None)))
         self.customer_login_btn.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
         self.grid_rowconfigure(0, weight=1)
