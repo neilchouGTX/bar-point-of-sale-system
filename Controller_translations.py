@@ -4,7 +4,7 @@
 languages = {
     'English': {
         # For Login_view
-        'app_title': "Pub Login System",
+        'app_title': "Home",
         'language_label': "Select Language:",
         'radio_vip': "VIP Customer",
         'radio_staff': "Staff",

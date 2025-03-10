@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "nr": "1001",
+        "namn": "Vanlig Vodka",
+        "prisinklmoms": "195.00",
+        "quantity": 2
+    }
+]

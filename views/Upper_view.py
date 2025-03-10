@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font
 from styles.style_config import *
+from PIL import Image, ImageTk
 import json
 
 from Controller_translations import languages
@@ -19,44 +20,76 @@ class UpperView(Frame):
         self.languages = languages
         self.current_language = "English"
 
+        # Configuring grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         self.display()
         self.language_select()
 
     def display(self):
+        # Title and image frame
+        self.top_frame = Frame(self)
+        self.top_frame.configure(bg="#A7C7E7")
+        self.top_frame.grid(row=0, column=0, sticky="ew")
 
-        self.upper_home_btn = tk.Button(self, text="Home", **self.button_style, command=lambda: self.changePage("HomeView"))
-        self.upper_home_btn.grid(row=0, column=0, padx=10, pady=10)
+        # Configuring frame to center title + image
+        self.top_frame.grid_columnconfigure(0, weight=1)
+        self.top_frame.grid_columnconfigure(1, weight=0)
+        self.top_frame.grid_columnconfigure(2, weight=0)
+        self.top_frame.grid_columnconfigure(3, weight=1)
 
-        self.upper_my_orders_btn = tk.Button(self, text="Orders", **self.button_style, command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder()))
-        self.upper_my_orders_btn.grid(row=0, column=1, padx=10, pady=10)
+        # Flying Dutchman Image
+        self.ship_image = Image.open("images/TheFlyingDutchman.png")
+        self.ship_image = self.ship_image.resize((100, 75))
+        self.ship_image = ImageTk.PhotoImage(self.ship_image)
+        ship_image_label = Label(self.top_frame, image=self.ship_image, bg="#A7C7E7")
+        ship_image_label.grid(row=0, column=1, padx=(0,10), pady=10)
+
+        # Flying Dutchman Title
+        self.title_label = Label(self.top_frame, text="The Flying Dutchman", font=("Georgia", 48, "bold"),
+                            bg="#A7C7E7", fg="#000435")
+        self.title_label.grid(row=0, column=2, sticky="w", padx=10, pady=10)
+
+        # Resizing title based on window size
+        self.bind("<Configure>", self.adjust_title)
+
+        # Buttons frame
+        self.upper_btns = Frame(self)
+        self.upper_btns.configure(bg="#A7C7E7")
+        self.upper_btns.grid(row=1, column=0, sticky="news")
+        self.upper_btns.grid_columnconfigure(0, weight=1)
+        self.upper_btns.grid_columnconfigure(1, weight=1)
+        self.upper_btns.grid_columnconfigure(2, weight=1)
+        self.upper_btns.grid_columnconfigure(3, weight=1)
+        self.upper_btns.grid_columnconfigure(4, weight=1)
+
+        self.upper_home_btn = tk.Button(self.upper_btns, text="Home", **self.button_style, command=lambda: self.changePage("HomeView"))
+        self.upper_home_btn.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+        self.upper_my_orders_btn = tk.Button(self.upper_btns, text="Orders", **self.button_style, command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder()))
+        self.upper_my_orders_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
 
         # --TO DO--
         # Only allow access to "Staff" view if logged in as staff; otherwise, greyed out.
 
-        self.upper_staff_view_btn = tk.Button(self, text="Staff", **self.button_style, command=lambda: self.changePage("StaffView"))
-        self.upper_staff_view_btn.grid(row=0, column=2, padx=10, pady=10)
-
-        # Title
-        title_label = Label(self, text="The Flying Dutchman", font=("Georgia", 30, "bold"),
-                            bg="#A7C7E7", fg="#000435")
-        title_label.grid(row=0, column=3, sticky="news", padx=10, pady=10)
-
-        # Adjusting grid to center title
-        self.columnconfigure(3, weight=1)
+        self.upper_staff_view_btn = tk.Button(self.upper_btns, text="Staff", **self.button_style, command=lambda: self.changePage("StaffView"))
+        self.upper_staff_view_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
 
         # self.selected_var = tk.StringVar(value="English")
         # self.combo = ttk.Combobox(self, textvariable=self.selected_var, values=["English", "Svenska", "中文"])
         # self.combo.grid(row=0, column=4, sticky="news", padx=10, pady=10)
         # self.combo.current(0)
         
-        self.upper_login_top_btn = tk.Button(self, text="Login", **self.button_style, command=lambda: self.changePage("LoginView"))
-        self.upper_login_top_btn.grid(row=0, column=5, padx=10, pady=10)
+        self.upper_login_top_btn = tk.Button(self.upper_btns, text="Login", **self.button_style, command=lambda: self.changePage("LoginView"))
+        self.upper_login_top_btn.grid(row=0, column=3, sticky="ew", padx=10, pady=10)
 
     def language_select(self):
         self.selected_var = tk.StringVar(value=self.current_language)
-        self.combo = ttk.Combobox(self, textvariable=self.selected_var, 
+        self.combo = ttk.Combobox(self.upper_btns, textvariable=self.selected_var,
                                   values=list(self.languages.keys()), state="readonly")
-        self.combo.grid(row=0, column=4, sticky="news", padx=10, pady=10)
+        self.combo.grid(row=0, column=4, sticky="ew", padx=10, pady=10)
         self.combo.current(0)
         
         # 绑定语言选择事件 / Bind language selection event
@@ -85,3 +118,15 @@ class UpperView(Frame):
         切换页面 / Change page
         """
         self.controller.show_frame(page_name)
+
+    def adjust_title(self, event):
+        window_width = event.width
+
+        if window_width < 500:
+            font_size = 24
+        elif 500 <= window_width < 800:
+            font_size = 32
+        else:
+            font_size = 48
+
+        self.title_label.config(font=("Georgia", font_size, "bold"))

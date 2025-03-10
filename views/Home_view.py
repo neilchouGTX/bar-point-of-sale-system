@@ -16,34 +16,36 @@ class HomeView(Frame):
         self.display()
 
     def display(self):
-        self.main_frame = tk.Frame(self, bg="#A7C7E7", width=1250, height=650)
-        self.main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        # Background Image
+        self.bg_image = Image.open("images/ocean_background.jpg").resize((1500, 780))
+        self.bg_photo = ImageTk.PhotoImage(self.bg_image)
 
-        # Flying Dutchman Image
-        self.ship_image = Image.open("images/TheFlyingDutchman.png")
-        self.ship_image = self.ship_image.resize((400,300))
-        self.ship_image = ImageTk.PhotoImage(self.ship_image)
-        ship_image_label = Label(self, image=self.ship_image, bg="#A7C7E7")
-        ship_image_label.pack(pady=20)
+        self.bg_label = tk.Label(self, image=self.bg_photo)
+        self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.bg_label.lower()
 
-        # Placing buttons below image
-        login_btns = Frame(self, bg="#A7C7E7")
-        login_btns.pack(side="top", padx=10, pady=10, fill="x")
+        # User icon image
+        user_icon = Image.open("images/user_icon.png").resize((150, 150))
+        self.user_icon = ImageTk.PhotoImage(user_icon)
+        user_label = tk.Label(self, image=self.user_icon, bg="#A7C7E7")
+        user_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
         # # In the main screen, the Order Now and VIP blocks
         # self.order_btn = tk.Button(login_btns, text="Order Now", **self.button_style, width=10, command=lambda: self.changePage("OrderView"))
         # self.order_btn.pack(side="top", padx=10, pady=10)
 
-        self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
-
-        self.order_btn.pack(side="top", padx=10, pady=10)
+        #self.order_btn = tk.Button(login_btns, text="Order Now NEW!!!", **self.button_style, width=10, command=lambda: (self.changePage("OrderViewNew"), self.controller.refreshOrderView(None)))
+        #self.order_btn.pack(side="top", padx=10, pady=10)
         
-        self.login_btn = tk.Button(login_btns, text="Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
-        self.login_btn.pack(side="top", padx=10, pady=10)
+        self.staff_login_btn = tk.Button(self, text="Staff Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
+        self.staff_login_btn.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
-        # self.login_btn = tk.Button(login_btns, text="Customer Login", **self.button_style,
-        #                            width=10, command=lambda: self.changePage("LoginView"))
-        # self.login_btn.pack(side="top", padx=10, pady=10)
+        self.customer_login_btn = tk.Button(self, text="Customer Login", **self.button_style,
+                                   width=10, command=lambda: self.changePage("LoginView"))
+        self.customer_login_btn.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
 
     def changePage(self, page_name):
