@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "id": "999999002",
+        "name": "French Fries"
+    },
+    {
+        "id": "999999003",
+        "name": "Onion Rings"
+    },
+    {
+        "id": "999999004",
+        "name": "Chicken Wings"
+    }
+]

@@ -6,7 +6,7 @@ from styles.style_config import *
 import os
 from Controller_translations import languages
 
-class OrderViewNew(Frame):
+class OrderViewVIP(Frame):
     def __init__(self, root, controller):
         super().__init__(root)
         self.controller = controller
@@ -19,7 +19,7 @@ class OrderViewNew(Frame):
         self.button_style = get_button_style2(self)
 
         self.price = 0
-        self.category = "all"
+        self.category = None  
         self.canvas = None
         self.scroll_y = None
         self.frame = None
@@ -73,9 +73,17 @@ class OrderViewNew(Frame):
             self.submenu_frame, 
             text="Food",
             **self.button_style,
-            command=lambda: self.refresh(-1, "food")
+            command=lambda: self.refresh(0, "food")
         )
         food_btn.pack(side="left", padx=10, pady=5)
+
+        VIP_btn = tk.Button(
+            self.submenu_frame, 
+            text="VIP",
+            **self.button_style,
+            command=lambda: self.refresh(0, "VIP")
+        )
+        VIP_btn.pack(side="left", padx=10, pady=5)
 
         self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
@@ -160,13 +168,35 @@ class OrderViewNew(Frame):
                 continue
             else:
                 continue
+        drinks_data_VIP = self.controller.getBeerDataFromVIPMenu()
+        for drink in drinks_data_VIP:
+            if self.items_count > 50:
+                break
+            if self.category == "VIP":
+                self.createDrinkCard(drink)
+                continue
+            elif self.category == "food" and drink.varugrupp == "Food":
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 300 and float(drink.prisinklmoms) < 300 and drink.varugrupp != "Food":
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 1000 and 300 <= float(drink.prisinklmoms) < 1000 and drink.varugrupp != "Food":
+                self.createDrinkCard(drink)
+                continue
+            elif self.price == 1001 and float(drink.prisinklmoms) >= 1000 and drink.varugrupp != "Food":
+                self.createDrinkCard(drink)
+                continue
+            elif self.category == "all":
+                self.createDrinkCard(drink)
+                continue
+            else:
+                continue
 
 
     def refresh(self, price, new_category=None):
         """ Switch category and reload data """
         self.price = price
-        if new_category == None:
-            self.category = "all"
         self.category = new_category
         self.load_drinks()
 
@@ -178,8 +208,9 @@ class OrderViewNew(Frame):
         self.submenu_frame.winfo_children()[2].config(text=self.languages[lang_code]['price300to1000'])
         self.submenu_frame.winfo_children()[3].config(text=self.languages[lang_code]['above1000'])
         self.submenu_frame.winfo_children()[4].config(text=self.languages[lang_code]['food'])
-        self.submenu_frame.winfo_children()[5].config(text=self.languages[lang_code]['shopping_cart'])
-        self.submenu_frame.winfo_children()[6].config(text=self.languages[lang_code]['remove_item'])
+        self.submenu_frame.winfo_children()[5].config(text=self.languages[lang_code]['VIP'])
+        self.submenu_frame.winfo_children()[6].config(text=self.languages[lang_code]['shopping_cart'])
+        self.submenu_frame.winfo_children()[7].config(text=self.languages[lang_code]['remove_item'])
         # self.shopping_cart_btn.config(text=self.languages[lang_code]['shopping_cart'])
         
         for widget in self.inner_frame.winfo_children():
