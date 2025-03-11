@@ -237,7 +237,8 @@ class DrinkCard(tk.Frame):
                  f"Country: {drink_data.ursprunglandnamn[0:self.MAX_LENGTH]}\n"
                  f"Price: {drink_data.prisinklmoms[:self.MAX_LENGTH]} kr",
             justify="left",
-            bg="#B3E5FC"
+            bg="#B3E5FC",
+            fg="black"
             )
             language_for_food = True
         else:
@@ -251,7 +252,8 @@ class DrinkCard(tk.Frame):
                     f"Packaging: {drink_data.forpackning[:self.MAX_LENGTH]}\n"
                     f"Price: {drink_data.prisinklmoms[:self.MAX_LENGTH]} kr",
                 justify="left",
-                bg="#B3E5FC"
+                bg="#B3E5FC",
+                fg="black"
             )
             language_for_food = False
         self.info_label.pack(pady=5)
@@ -265,7 +267,7 @@ class DrinkCard(tk.Frame):
         self.minus_btn = tk.Button(self.quantity_frame, text="-", **self.button_style, command=self.decrease_quantity, width=3)
         self.minus_btn.grid(row=0, column=0, padx=5)
 
-        self.quantity_label = tk.Label(self.quantity_frame, text=str(self.quantity), width=3, bg="white")
+        self.quantity_label = tk.Label(self.quantity_frame, text=str(self.quantity), width=3, bg="white", fg="black")
         self.quantity_label.grid(row=0, column=1)
 
         self.plus_btn = tk.Button(self.quantity_frame, text="+", **self.button_style, command=self.increase_quantity, width=3)

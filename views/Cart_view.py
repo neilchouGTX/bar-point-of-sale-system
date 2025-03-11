@@ -48,9 +48,18 @@ class CartView(Frame):
         )
         self.VittVin_btn.pack(side="left", padx=10, pady=5)
 
+        self.price_reveal_label = tk.Label(
+            self.submenu_frame,
+            text="0 kr",
+            fg="white",
+            bg="#291802",
+            font=self.custom_font
+        )
+        self.price_reveal_label.pack(side="right", padx=10, pady=5)
+
         self.total_price_label = tk.Label(
             self.submenu_frame,
-            text="Total: 0 kr",
+            text="Total:",
             fg="white",
             bg="#291802",
             font=self.custom_font
@@ -137,7 +146,7 @@ class CartView(Frame):
                 break
     def update_all_total_price(self):
         total_price = sum(float(drink.prisinklmoms) * self.controller.get_cart_quantity(drink) for drink in self.controller.get_cart_data())
-        self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
+        self.price_reveal_label.config(text=f"{total_price:.2f} kr")
 
     def refresh(self):
         self.load_drinks()
@@ -152,7 +161,7 @@ class CartView(Frame):
         ldict = self.controller.languages[lang_code]
 
         # 更新標題文字 / Update the title label
-        self.total_price_label.config(text=f"{ldict['total']}: 0 kr")
+        self.total_price_label.config(text=f"{ldict['total']}")
 
         # 更新按鈕文字 / Update button texts
         self.VittVin_btn.config(text=ldict['back'])
@@ -172,11 +181,23 @@ class DrinkCard(tk.Frame):
         self.button_style = get_button_style2(self)
 
         # Use default image if image not found
-        img_path = "images/hei.jpg"  
+        img_path_jpg = "images/" + drink_data.namn + ".jpg"
+        img_path_png = "images/" + drink_data.namn + ".png"
+        if os.path.exists(img_path_jpg):
+            img_path = img_path_jpg
+        elif os.path.exists(img_path_png):
+            img_path = img_path_png
+        else:
+            img_path = "images/no-preview.jpg"
         if os.path.exists(img_path):  
             img = Image.open(img_path)
-            img = img.resize((100, 100), Image.Resampling.LANCZOS)
-            self.image = ImageTk.PhotoImage(img)
+            display_size = (120, 120)
+            background = Image.new("RGBA", display_size, (255, 255, 255, 0))  # 白色背景，也可以改成透明(255,255,255,0)
+            img.thumbnail(display_size, Image.Resampling.LANCZOS)
+            img_x = (display_size[0] - img.size[0]) // 2
+            img_y = (display_size[1] - img.size[1]) // 2
+            background.paste(img, (img_x, img_y), mask=img if img.mode == "RGBA" else None)
+            self.image = ImageTk.PhotoImage(background)
         else:
             self.image = None 
 

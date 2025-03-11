@@ -73,6 +73,11 @@ languages = {
         'undo': "Undo",
         'redo': "Redo",
 
+        # For My_orders_view
+        'Your_Orders': "Your Orders,",
+        'Your_table_number_is': "Your table number is"
+        'redo': "Redo",
+
         # For Home_VIP_view
         'vip_home_welcome': "Welcome!",
         'vip_home_phone': "Phone number:",
@@ -153,6 +158,11 @@ languages = {
         'undo': "撤銷",
         'redo': "重做",
 
+        # For My_orders_view
+        'Your_Orders': "您的訂單，",
+        'Your_table_number_is': "您的桌號是"
+        'redo': "重做",
+
         #For Home_VIP_view
         'vip_home_welcome': "歡迎！",
         'vip_home_phone': "電話號碼：",
@@ -230,6 +240,11 @@ languages = {
 
         'checkout':"Kassa",
         'undo': "Ångra",
+        'redo': "Gör om",
+
+        # For My_orders_view
+        'Your_Orders': "Dina beställningar,",
+        'Your_table_number_is': "Ditt bordnummer är"
         'redo': "Gör om",
 
         #For Home_VIP_view
