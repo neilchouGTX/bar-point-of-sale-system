@@ -36,13 +36,14 @@ class StaffView(tk.Frame):
 
         # Navigation buttons
         nav_frame = tk.Frame(self, bg="#A7C7E7")
-        nav_frame.grid(row=1, column=0, columnspan=4, pady=10)
+        nav_frame.grid(row=1, column=0, columnspan=4, pady=10, sticky="ew")
 
         self.buttons = {}
         for idx, page in enumerate(["order", "stock", "reservation", "menu", "VIP_menu"]):
             btn = tk.Button(nav_frame, text=page.capitalize(), **self.button_style,
                             command=partial(self.switch_page, page))
-            btn.grid(row=0, column=idx, padx=10)
+            btn.grid(row=0, column=idx, padx=10, sticky="news")
+            nav_frame.grid_columnconfigure(idx, weight=1)
             self.buttons[page] = btn
 
         # Table frame

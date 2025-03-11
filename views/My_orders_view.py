@@ -53,17 +53,16 @@ class MyOrderView(Frame):
             self.submenu_frame,
             text="Your Orders",
             fg="white",
-            bg="#291802",
-            font=("Arial", 25, "bold")
+            bg="#291802"
         )
         self.YourOrders_label.pack(side="left", pady=5)
+        self.bind("<Configure>", self.adjust_font_size)
 
         self.Table_label = tk.Label(
             self.submenu_frame,
             text=f"Your table number is:",
             fg="white",
-            bg="#291802",
-            font=("Arial", 25, "bold")
+            bg="#291802"
         )
         self.Table_label.pack(side="left", pady=5)
 
@@ -71,8 +70,7 @@ class MyOrderView(Frame):
             self.submenu_frame,
             text=f"{self.table_number}",
             fg="white",
-            bg="#291802",
-            font=("Arial", 25, "bold")
+            bg="#291802"
         )
         self.Table_number_label.pack(side="left", pady=5)
 
@@ -182,6 +180,20 @@ class MyOrderView(Frame):
         # 更新按鈕文字 / Update button texts
         self.back_btn.config(text=ldict['back'])
 
+    def adjust_font_size(self, event):
+        window_width = event.width
+
+        if window_width < 550:
+            font_size = 14
+        elif 500<= window_width < 800:
+            font_size = 18
+        else:
+            font_size = 25
+
+        self.YourOrders_label.config(font=("Arial", font_size, "bold"))
+        self.Table_label.config(font=("Arial", font_size, "bold"))
+        self.Table_number_label.config(font=("Arial", font_size, "bold"))
+
 
 class DrinkCard(tk.Frame):
     def __init__(self, parent, drink_data, controller):
@@ -267,4 +279,3 @@ class DrinkCard(tk.Frame):
     # def update_total_price(self):
     #     total_price = float(self.drink_data.prisinklmoms) * self.quantity
     #     self.total_price_label.config(text=f"Total: {total_price:.2f} kr")
-
