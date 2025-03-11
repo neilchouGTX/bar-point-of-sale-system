@@ -152,12 +152,12 @@ class MyOrderView(Frame):
     def adjust_font_size(self, event):
         window_width = event.width
 
-        if window_width < 550:
-            font_size = 14
-        elif 500<= window_width < 800:
-            font_size = 18
+        if window_width < 750:
+            font_size = 10
+        elif 750<= window_width < 1000:
+            font_size = 16
         else:
-            font_size = 25
+            font_size = 24
 
         self.YourOrders_label.config(font=("Arial", font_size, "bold"))
         self.Table_label.config(font=("Arial", font_size, "bold"))
