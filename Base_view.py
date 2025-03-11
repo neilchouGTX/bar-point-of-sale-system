@@ -45,6 +45,12 @@ class BaseView(tk.Tk):
         self.show_frame("HomeView")
 
     def show_frame(self, page_name):
+        if page_name == "LoginView":
+            # 檢查當前是否已登入 / Check if login
+            if self.controller.userModel.is_logged_in or self.controller.vipModel.is_logged_in:
+                self.controller.login_view.show_logout_view( ... )  # 視情況而定
+            else:
+                self.controller.login_view.show_login_view()
         frame = self.frames[page_name]
         self.current_frame = frame
         frame.tkraise()

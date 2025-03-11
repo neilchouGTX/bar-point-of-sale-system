@@ -9,12 +9,6 @@ import json
 from Controller_translations import languages
 
 
-"""
-I expect to update the Upperview after VIP login in 3.11 
-
---Shuai Guo
-"""
-
 
 class UpperView(Frame):
     def __init__(self,root,controller):
@@ -125,6 +119,11 @@ class UpperView(Frame):
         """
         切换页面 / Change page
         """
+            # 如果要跳轉的是 LoginView，先呼叫 show_login_view() 以重置
+            # If jump to LoginView, call show_login_view() first to reset
+        if page_name == "LoginView":
+            self.controller.login_view.show_login_view()
+
         self.controller.show_frame(page_name)
 
     def adjust_title(self, event):
@@ -138,3 +137,140 @@ class UpperView(Frame):
             font_size = 48
 
         self.title_label.config(font=("Georgia", font_size, "bold"))
+
+
+
+    def update_header(self):
+        """
+        根據當前登入狀態（VIP、員工、未登入）動態更新頂部按鈕。
+        Dynamically update the top navigation buttons based on the current login status (VIP, Staff, or not logged in).
+
+        1. 若 VIP 已登入：
+        - 按鈕順序從左到右：VIP Home、Orders、Logout（紅色）、語言切換選項。
+        - 隱藏 Staff 按鈕。
+        2. 若 Staff 已登入：
+        - 按鈕順序：Home、Orders、Staff、Logout（紅色）、語言切換選項。
+        3. 若未登入：
+        - 按鈕順序：Home、Orders、Staff、Login、語言切換選項。
+        """
+
+        # 清除所有按鈕的 grid 佈局，稍後根據身份重新設定
+        # Remove all buttons from the grid layout, and reconfigure them based on login status
+        self.upper_home_btn.grid_forget()
+        self.upper_my_orders_btn.grid_forget()
+        self.upper_staff_view_btn.grid_forget()
+        self.upper_login_top_btn.grid_forget()
+
+        # 檢查是否為 VIP 登入 / Check if VIP is logged in
+        if self.controller.vipModel.is_logged_in:
+            # VIP 已登入 / VIP is logged in:
+            # 顯示 "VIP Home"、"Orders"、"Logout"（紅色）+ 語言切換
+            # Show "VIP Home", "Orders", "Logout" (Red) + language switch
+
+            self.upper_home_btn.config(
+                text="VIP Home",
+                command=lambda: self._go_vip_home()
+            )
+            self.upper_home_btn.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+            self.upper_my_orders_btn.config(
+                text="Orders",
+                command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder())
+            )
+            self.upper_my_orders_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
+
+            # 隱藏 Staff 按鈕，不刪除以便後續恢復
+            # Hide "Staff" button (not destroyed, can be restored later)
+            self.upper_staff_view_btn.grid_remove()
+
+            # Logout 按鈕設置為紅色 / Logout button set to red
+            self.upper_login_top_btn.config(
+                text="Logout",
+                fg="red",
+                command=self._logout
+            )
+            self.upper_login_top_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
+
+        # 若 Staff 登入 / If Staff is logged in
+        elif self.controller.userModel.is_logged_in and self.controller.userModel.user_type == "Staff":
+            # Staff 已登入：顯示 "Home", "Orders", "Staff", "Logout"（紅色）, 語言切換
+            # Staff is logged in: Show "Home", "Orders", "Staff", "Logout" (Red), and language switch
+
+            self.upper_home_btn.config(
+                text="Home",
+                command=lambda: self.changePage("HomeView")
+            )
+            self.upper_home_btn.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+            self.upper_my_orders_btn.config(
+                text="Orders",
+                command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder())
+            )
+            self.upper_my_orders_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
+
+            self.upper_staff_view_btn.config(
+                text="Staff",
+                command=lambda: self.changePage("StaffView")
+            )
+            self.upper_staff_view_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
+
+            self.upper_login_top_btn.config(
+                text="Logout",
+                fg="red",
+                command=lambda: self.controller.handle_logout()
+            )
+            self.upper_login_top_btn.grid(row=0, column=3, sticky="ew", padx=10, pady=10)
+
+        # 若未登入 / If not logged in
+        else:
+            # 未登入：顯示 "Home", "Orders", "Staff", "Login", 語言切換
+            # Not logged in: Show "Home", "Orders", "Staff", "Login", and language switch
+
+            self.upper_home_btn.config(
+                text="Home",
+                fg="black",
+                command=lambda: self.changePage("HomeView")
+            )
+            self.upper_home_btn.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+            self.upper_my_orders_btn.config(
+                text="Orders",
+                fg="black",
+                command=lambda: (self.changePage("MyOrderView"), self.controller.refreshMyOrder())
+            )
+            self.upper_my_orders_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
+
+            self.upper_staff_view_btn.config(
+                text="Staff",
+                fg="black",
+                command=lambda: self.changePage("StaffView")
+            )
+            self.upper_staff_view_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
+
+            self.upper_login_top_btn.config(
+                text="Login",
+                fg="black",
+                command=lambda: self.changePage("LoginView")
+            )
+            self.upper_login_top_btn.grid(row=0, column=3, sticky="ew", padx=10, pady=10)
+
+    def _logout(self):
+        """
+        處理登出邏輯：登出後切回 HomeView
+        Handle logout logic: log out and go back to HomeView
+        """
+        self.controller.userModel.logout()
+        self.controller.vipModel.logout()
+        self.controller.view.show_frame("HomeView")
+        self.update_header()
+
+    def _go_vip_home(self):
+        """
+        切換至 HomeVIPView，若當前已經是 HomeVIPView 則無動作
+        Switch to HomeVIPView; if already on HomeVIPView, do nothing
+        """
+        current_frame_name = type(self.controller.view.get_current_frame()).__name__
+        if current_frame_name != "HomeVIPView":
+            self.controller.show_frame("HomeVIPView")
+        # 若已經在 HomeVIPView，則不變更視圖
+        # If already on HomeVIPView, no change

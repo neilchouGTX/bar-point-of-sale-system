@@ -101,6 +101,7 @@ class Controller():
                 self.login_view.show_logout_view("VIP", identifier)
                 #self.show_VIP_page()
                 self.show_frame("HomeVIPView")
+                self.view.frames["UpperView"].update_header()
             else:
                 # 顯示錯誤提示
                 self.login_view.show_error_message("電話號碼錯誤 / Incorrect phone number.")
@@ -109,6 +110,7 @@ class Controller():
             self.userModel.login("Staff", identifier)
             self.login_view.show_logout_view("Staff", identifier)
             self.show_staff_page()
+            self.view.frames["UpperView"].update_header()
 
     def handle_logout(self):
         """
@@ -118,6 +120,8 @@ class Controller():
         self.userModel.logout()    # or self.vipModel.logout() if you like to unify
         self.vipModel.logout()
         self.login_view.show_login_view()
+        self.view.frames["UpperView"].update_header()
+        self.view.show_frame("HomeView")
     
     def handle_non_member(self):
         """

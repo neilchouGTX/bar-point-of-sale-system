@@ -132,6 +132,7 @@ class HomeVIPView(Frame):
         self.controller.userModel.logout()
         self.controller.vipModel.logout()
         self.controller.view.show_frame("HomeView")
+        self.controller.view.frames["UpperView"].update_header()
 
     def update_language(self, lang_code):
         """
