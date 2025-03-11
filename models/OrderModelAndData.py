@@ -2,13 +2,13 @@ import os
 import json
 
 class OrderItem:
-    def __init__(self, item_id, amount, price, paid=0):
+    def __init__(self, item_id, amount, price, paid):
         self.id = item_id
         self.amount = amount
         self.price = price
         self.paid = paid
 class Order:
-    def __init__(self, table_number, orderItems,totalPrice, fullPaid=False):
+    def __init__(self, table_number, orderItems,totalPrice, fullPaid):
         self.tableNumber = table_number
         self.totalPrice = totalPrice
         self.orderItems = orderItems
@@ -79,7 +79,7 @@ class OrderModel:
         self.staticData = [
             Order(
                 table_number=order["tableNumber"],
-                orderItems=[OrderItem(item["id"], item["amount"], item["price"], paid=0) for item in order["orderItems"]],
+                orderItems=[OrderItem(item["id"], item["amount"], item["price"], item["paid"]) for item in order["orderItems"]],
                 totalPrice=order["totalPrice"],
                 fullPaid=False
             )
@@ -119,7 +119,6 @@ class OrderModel:
 
         new_order = Order(table_number, order_items, total_price, fullPaid=False)
 
-        # 檢查是否已有該桌號的訂單
         existing_order = None
         for order in self.staticData:
             if order.tableNumber == table_number:
@@ -127,21 +126,18 @@ class OrderModel:
                 break
 
         if existing_order:
-            # 合併總價
             existing_order.totalPrice += new_order.totalPrice
 
-            # 合併訂單項目：若已存在相同商品則累加數量，否則新增
             for new_item in new_order.orderItems:
                 found = False
                 for exist_item in existing_order.orderItems:
-                    if exist_item.id == new_item.id:
+                    if str(exist_item.id) == str(new_item.id):
                         exist_item.amount += new_item.amount
                         found = True
                         break
                 if not found:
                     existing_order.orderItems.append(new_item)
         else:
-            # 若無現存訂單，直接加入新的訂單
             self.staticData.append(new_order)
 
         self.saveData()
@@ -150,36 +146,51 @@ class OrderModel:
     def merge_orders_to_objects(self):
         with open(self.db_path, "r", encoding="utf-8") as file:
             orders = json.load(file)
-        
-        merged_orders = {}
 
+        order_objects = []
         for order in orders:
-            table_number = order["tableNumber"]
-
-            if table_number not in merged_orders:
-                merged_orders[table_number] = {
-                    "totalPrice": 0,
-                    "orderItems": {}
-                }
-
-            merged_orders[table_number]["totalPrice"] += order["totalPrice"]
-
-            for item in order["orderItems"]:
-                item_id = item["id"]
-                if item_id in merged_orders[table_number]["orderItems"]:
-                    # existing item, add amount
-                    merged_orders[table_number]["orderItems"][item_id].amount += item["amount"]
-                else:
-                    # new item, create OrderItem object
-                    merged_orders[table_number]["orderItems"][item_id] = OrderItem(item["id"], item["amount"], item["price"])
-
-        merged_orders_list = [
-            Order(
-                table_number=table,
-                orderItems=list(details["orderItems"].values()),
-                totalPrice=details["totalPrice"]
+            order_items = [
+                OrderItem(item["id"], item["amount"], item["price"], item["paid"])
+                for item in order["orderItems"]
+            ]
+            order_obj = Order(
+                table_number=order["tableNumber"],
+                orderItems=order_items,
+                totalPrice=order["totalPrice"],
+                fullPaid=order["fullPaid"]
             )
-            for table, details in merged_orders.items()
-        ]
+            order_objects.append(order_obj)
         
-        return merged_orders_list
+        return order_objects
+        
+        # merged_orders = {}
+
+        # for order in orders:
+        #     table_number = order["tableNumber"]
+
+        #     if table_number not in merged_orders:
+        #         merged_orders[table_number] = {
+        #             "totalPrice": 0,
+        #             "orderItems": {}
+        #         }
+
+        #     merged_orders[table_number]["totalPrice"] += order["totalPrice"]
+
+        #     for item in order["orderItems"]:
+        #         item_id = item["id"]
+        #         if item_id in merged_orders[table_number]["orderItems"]:
+        #             merged_orders[table_number]["orderItems"][item_id].amount += item["amount"]
+        #             merged_orders[table_number]["orderItems"][item_id].paid += item.get("paid", 0)
+        #         else:
+        #             merged_orders[table_number]["orderItems"][item_id] = OrderItem(item["id"], item["amount"], item["price"], paid=item.get("paid", 0))
+
+        # merged_orders_list = [
+        #     Order(
+        #         table_number=table,
+        #         orderItems=list(details["orderItems"].values()),
+        #         totalPrice=details["totalPrice"]
+        #     )
+        #     for table, details in merged_orders.items()
+        # ]
+        
+        # return merged_orders_list

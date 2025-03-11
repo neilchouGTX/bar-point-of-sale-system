@@ -49,6 +49,14 @@ class MyOrderView(Frame):
         )
         self.back_btn.pack(side="left", padx=10, pady=5)
 
+        self.payment_btn = tk.Button(
+            self.submenu_frame, 
+            text="Pay Now",
+            **self.button_style,
+            command=lambda: (self.controller.view.show_frame("PaymentView"), self.controller.refreshpaymentView())
+        )
+        self.payment_btn.pack(side="left", padx=10, pady=5)
+
         self.YourOrders_label = tk.Label(
             self.submenu_frame,
             text="Your Orders",
@@ -74,14 +82,6 @@ class MyOrderView(Frame):
         )
         self.Table_number_label.pack(side="left", pady=5)
 
-        # checkout_btn = tk.Button(
-        #     self.submenu_frame,
-        #     text="Checkout",
-        #     **self.button_style,
-        #     command=lambda: self.controller.view.show_frame("SendOrderView")
-        # )
-        # checkout_btn.pack(side="right", padx=10, pady=5)
-
     def create_main_area(self):
         self.canvas = tk.Canvas(self, bg="white")
         self.scroll_y = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
@@ -97,32 +97,6 @@ class MyOrderView(Frame):
         self.canvas.grid(row=1, column=0, sticky="nsew")
         self.scroll_y.grid(row=1, column=1, sticky="ns")
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
-
-    # def create_table_selector(self):
-    #     self.table_selector_frame = tk.Frame(self, bg="white")
-    #     self.table_selector_frame.grid(row=2, column=0, pady=10)
-        
-    #     tk.Label(self.table_selector_frame, text="Select Table:", font=self.custom_font, bg="white").pack(side="left", padx=5)
-        
-    #     self.table_var = tk.StringVar(value="Table 1")
-    #     self.table_dropdown = tk.OptionMenu(self.table_selector_frame, self.table_var, *[f"Table {i}" for i in range(1, 11)])
-    #     self.table_dropdown.config(font=("Arial", 14), width=10)  # Increased size
-    #     self.table_dropdown.pack(side="left", padx=5)
-
-    # def create_submit_button(self):
-    #     self.submit_btn = tk.Button(
-    #         self,
-    #         text="Send Order",
-    #         **self.custom_send_order_button_style,
-    #         command=self.submit_order
-    #     )
-    #     self.submit_btn.grid(row=3, column=0, pady=10)
-
-    # def submit_order(self):
-    #     selected_table = self.table_var.get()
-    #     table_number = int(selected_table.split(" ")[1]) 
-    #     self.controller.send_order(table_number)
-    #     print(f"Order submitted for {selected_table}")  # Replace with actual order handling logic
 
     def _on_mousewheel(self, event):
         if self.controller.view.get_current_frame() == self:
@@ -148,14 +122,6 @@ class MyOrderView(Frame):
                     card.grid(row=row, column=0, padx=10, pady=10)
                     row += 1
 
-            # card = DrinkCard(self.inner_frame, drink, self.controller)
-            # card.grid(row=row, column=0, padx=10, pady=10)
-            # row += 1
-
-    # def update_all_total_price(self):
-    #     total_price = sum(float(drink.prisinklmoms) * self.controller.get_cart_quantity(drink) for drink in self.controller.get_cart_data())
-    #     self.Table_number_label.config(text=f"Total: {total_price:.2f} kr")
-
     def refresh(self):
         self.table_number = self.controller.get_table_number()
         if self.table_number == -1:
@@ -176,9 +142,12 @@ class MyOrderView(Frame):
         # 更新標題文字 / Update the title label
         self.YourOrders_label.config(text=ldict['Your_Orders'])
         self.Table_label.config(text=ldict['Your_table_number_is'])
+        if self.table_number == -1:
+            self.Table_number_label.config(text=ldict['Unknown, Please Order first.'])
 
         # 更新按鈕文字 / Update button texts
         self.back_btn.config(text=ldict['back'])
+        self.payment_btn.config(text=ldict['payment'])
 
     def adjust_font_size(self, event):
         window_width = event.width
@@ -268,14 +237,3 @@ class DrinkCard(tk.Frame):
         # Quantity and total price frame (Right side)
         self.total_frame = tk.Frame(self.main_frame, bg="#B3E5FC")
         self.total_frame.pack(side="left", padx=10)
-
-        # self.total_price_label = tk.Label(
-        #     self.total_frame,
-        #     text=f"Total: {float(drink_data.prisinklmoms) * self.quantity:.2f} kr",
-        #     bg="#B3E5FC"
-        # )
-        # self.total_price_label.pack()
-
-    # def update_total_price(self):
-    #     total_price = float(self.drink_data.prisinklmoms) * self.quantity
-    #     self.total_price_label.config(text=f"Total: {total_price:.2f} kr")

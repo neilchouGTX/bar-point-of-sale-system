@@ -354,6 +354,10 @@ class Controller():
         myOrderView = self.view.frames.get("MyOrderView")
         if myOrderView:
             myOrderView.refresh()
+    def refreshpaymentView(self):
+        paymentView = self.view.frames.get("PaymentView")
+        if paymentView:
+            paymentView.refresh()
     def get_table_number(self):
         return self.table_number
     def get_my_orders(self):

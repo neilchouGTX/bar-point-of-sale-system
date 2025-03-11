@@ -13,6 +13,7 @@ from views.Cart_view import *
 from views.SendOrder_view import *
 from views.Reservation_view import *
 from views.Home_VIP_view import *
+from views.Payment_view import *
 
 class BaseView(tk.Tk):
     def __init__(self, controller):
@@ -29,7 +30,7 @@ class BaseView(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
         
         # Initialize Frame pages
-        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew, OrderViewVIP, MyOrderView,StaffView, CartView, ReservationView, SendOrderView, HomeVIPView):
+        for F in (HomeView, UpperView, OrderView, LoginView, OrderViewNew, OrderViewVIP, MyOrderView,StaffView, CartView, ReservationView, SendOrderView, HomeVIPView, PaymentView):
 
             page_name = F.__name__
             frame = F(root=self, controller=self.controller)
