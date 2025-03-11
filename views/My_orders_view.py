@@ -159,7 +159,7 @@ class MyOrderView(Frame):
     def refresh(self):
         self.table_number = self.controller.get_table_number()
         if self.table_number == -1:
-            self.Table_number_label.config(text=f"Unknown")
+            self.Table_number_label.config(text=f"Unknown, Please Order first.")
         else:
             self.Table_number_label.config(text=f"{self.table_number}")
         self.load_drinks()
