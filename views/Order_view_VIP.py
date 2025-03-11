@@ -34,7 +34,8 @@ class OrderViewVIP(Frame):
 
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
-        self.submenu_frame.grid(row=0, column=0, sticky="ew")
+        self.submenu_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
+        self.submenu_frame.columnconfigure((0, 1, 2, 3, 4, 5, 6, 7), weight=1)
 
         # for category in ["Vitt vin", "Okryddad sprit"]:
         All_btn = tk.Button(
@@ -43,7 +44,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(0, "all")
         )
-        All_btn.pack(side="left", padx=10, pady=5)
+        All_btn.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
         under_300_btn = tk.Button(
             self.submenu_frame, 
@@ -51,7 +52,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(300, "alc")
         )
-        under_300_btn.pack(side="left", padx=10, pady=5)
+        under_300_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
 
         between_300_1000_btn = tk.Button(
             self.submenu_frame, 
@@ -59,7 +60,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(1000, "alc")
         )
-        between_300_1000_btn.pack(side="left", padx=10, pady=5)
+        between_300_1000_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
 
         greater_1000_btn = tk.Button(
             self.submenu_frame, 
@@ -67,7 +68,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(1001, "alc")
         )
-        greater_1000_btn.pack(side="left", padx=10, pady=5)
+        greater_1000_btn.grid(row=0, column=3, sticky="ew", padx=10, pady=10)
 
         food_btn = tk.Button(
             self.submenu_frame, 
@@ -75,7 +76,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(0, "food")
         )
-        food_btn.pack(side="left", padx=10, pady=5)
+        food_btn.grid(row=0, column=4, sticky="ew", padx=10, pady=10)
 
         VIP_btn = tk.Button(
             self.submenu_frame, 
@@ -83,7 +84,7 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: self.refresh(0, "VIP")
         )
-        VIP_btn.pack(side="left", padx=10, pady=5)
+        VIP_btn.grid(row=0, column=5, sticky="ew", padx=10, pady=10)
 
         self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
@@ -91,14 +92,14 @@ class OrderViewVIP(Frame):
             **self.button_style,
             command=lambda: (self.controller.view.show_frame("CartView"), self.controller.cart_refresh())
         )
-        self.shopping_cart_btn.pack(side="right", padx=10, pady=5)
+        self.shopping_cart_btn.grid(row=0, column=7, sticky="ew", padx=10, pady=10)
 
         self.remove_item_btn = tk.Button(
             self.submenu_frame,
             text="Remove Item",
             **self.button_style
         )
-        self.remove_item_btn.pack(side="right", padx=10, pady=5)
+        self.remove_item_btn.grid(row=0, column=6, sticky="ew", padx=10, pady=5)
 
     def create_main_area(self):
         # main scrollable area
