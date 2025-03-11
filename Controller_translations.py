@@ -75,8 +75,7 @@ languages = {
 
         # For My_orders_view
         'Your_Orders': "Your Orders,",
-        'Your_table_number_is': "Your table number is"
-        'redo': "Redo",
+        'Your_table_number_is': "Your table number is",
 
         # For Home_VIP_view
         'vip_home_welcome': "Welcome!",
@@ -160,8 +159,7 @@ languages = {
 
         # For My_orders_view
         'Your_Orders': "您的訂單，",
-        'Your_table_number_is': "您的桌號是"
-        'redo': "重做",
+        'Your_table_number_is': "您的桌號是",
 
         #For Home_VIP_view
         'vip_home_welcome': "歡迎！",
@@ -244,8 +242,7 @@ languages = {
 
         # For My_orders_view
         'Your_Orders': "Dina beställningar,",
-        'Your_table_number_is': "Ditt bordnummer är"
-        'redo': "Gör om",
+        'Your_table_number_is': "Ditt bordnummer är",
 
         #For Home_VIP_view
         'vip_home_welcome': "Välkommen!",
