@@ -43,10 +43,10 @@ def get_send_order_button_style(root):
         "padx": 20,
         "pady": 10,
         "bd": 0,
-        "fg": "white",
-        "bg": "#520a07",
-        "activebackground": "#400705",
-        "activeforeground": "white",
+        "fg": "black",
+        "bg": "white",
+        "activebackground": "white",
+        "activeforeground": "black",
         "font": custom_font,
         "relief": "flat"
     }
