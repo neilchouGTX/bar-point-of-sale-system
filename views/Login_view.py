@@ -262,12 +262,17 @@ class LoginView(tk.Frame):
         顯示登入畫面：清除輸入並顯示登入按鈕
         Show the login view: clear input and show login button
         """
-        self.identifier_var.set("")
+        # self.identifier_var.set("")
+        # self.error_label.config(text="")
+        # self.login_button.grid(row=4, column=0, columnspan=2, pady=(20, 5))
+        # self.logout_button.grid_forget()
+        # self._highlight_selected_button('VIP')  # 預設回到 VIP
+        # self.selected_user_type = 'VIP'
+        self.identifier_var.set("")  # 清空電話/帳號輸入
         self.error_label.config(text="")
         self.login_button.grid(row=4, column=0, columnspan=2, pady=(20, 5))
         self.logout_button.grid_forget()
-        self._highlight_selected_button('VIP')  # 預設回到 VIP
-        self.selected_user_type = 'VIP'
+
 
     def show_logout_view(self, user_type, identifier):
         """

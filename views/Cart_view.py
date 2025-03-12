@@ -37,7 +37,14 @@ class CartView(Frame):
 
     def create_submenu(self):
         self.submenu_frame = tk.Frame(self, bg="#291802")
-        self.submenu_frame.grid(row=0, column=0, sticky="ew")
+        self.submenu_frame.grid(row=0, column=0, sticky="news")
+
+        # Configuring grid for RWD
+        self.submenu_frame.grid_columnconfigure(0, weight=1)
+        self.submenu_frame.grid_columnconfigure(1, weight=1)
+        self.submenu_frame.grid_columnconfigure(2, weight=1)
+        self.submenu_frame.grid_columnconfigure(3, weight=1)
+        self.submenu_frame.grid_columnconfigure(4, weight=1)
 
         # for category in ["Vitt vin", "Okryddad sprit"]:
         self.VittVin_btn = tk.Button(
@@ -46,7 +53,7 @@ class CartView(Frame):
             **self.button_style,
             command=lambda: self.controller.view.show_frame("OrderViewNew") 
         )
-        self.VittVin_btn.pack(side="left", padx=10, pady=5)
+        self.VittVin_btn.grid(row=0, column=0, sticky="news", padx=10, pady=10)
 
         self.price_reveal_label = tk.Label(
             self.submenu_frame,
@@ -55,7 +62,7 @@ class CartView(Frame):
             bg="#291802",
             font=self.custom_font
         )
-        self.price_reveal_label.pack(side="right", padx=10, pady=5)
+        self.price_reveal_label.grid(row=0, column=4, sticky="e", padx=10, pady=10)
 
         self.total_price_label = tk.Label(
             self.submenu_frame,
@@ -64,7 +71,7 @@ class CartView(Frame):
             bg="#291802",
             font=self.custom_font
         )
-        self.total_price_label.pack(side="right", padx=10, pady=5)
+        self.total_price_label.grid(row=0, column=3, sticky="e", padx=10, pady=10)
 
         self.shopping_cart_btn = tk.Button(
             self.submenu_frame,
@@ -72,7 +79,7 @@ class CartView(Frame):
             **self.button_style,
             command=lambda: (self.controller.view.show_frame("SendOrderView"), self.controller.refreshSendOrderView())
         )
-        self.shopping_cart_btn.pack(side="right", padx=10, pady=5)
+        self.shopping_cart_btn.grid(row=0, column=5, sticky="ew", padx=10, pady=10)
 
         self.undo_btn = tk.Button(
             self.submenu_frame,
@@ -80,7 +87,7 @@ class CartView(Frame):
             **self.button_style,
             command = self.undo
         )
-        self.undo_btn.pack(side="right", padx=10, pady=5)
+        self.undo_btn.grid(row=0, column=1, sticky="ew", padx=10, pady=10)
 
         self.redo_btn = tk.Button(
             self.submenu_frame,
@@ -88,7 +95,7 @@ class CartView(Frame):
             **self.button_style,
             command=self.redo
         )
-        self.redo_btn.pack(side="right", padx=10, pady=5)
+        self.redo_btn.grid(row=0, column=2, sticky="ew", padx=10, pady=10)
 
         
     def undo(self):

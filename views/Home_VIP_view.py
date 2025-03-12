@@ -26,6 +26,10 @@ class HomeVIPView(Frame):
         # 產生用戶介面 / Build the user interface
         self._create_ui()
         
+        # 初始化時就生成密碼
+        # Generate the self-service code at initialization
+        self.self_service_code = random.randint(1000, 9999)
+
         # 根據當前語言更新文字 / Update texts according to current language
         self.update_language(self.current_language)
 
@@ -110,16 +114,13 @@ class HomeVIPView(Frame):
 
     def _show_self_service_code(self):
         """
-        顯示隨機 4 位數字的密碼及提示訊息
-        Display a random 4-digit code and the instruction message
+        顯示生成的密碼及提示訊息
+        Display the generated 4-digit code and the instruction message
         """
-        random_code = random.randint(1000, 9999)
-        # 自助取飲料提示 / Self-service drinks prompt
-        # 文字中包含 {code}，需根據多語系更新
         lang_dict = self.languages[self.current_language]
         self.self_service_label.config(
-            text=lang_dict['vip_home_self_service_msg'].format(code=random_code),
-            font=("Arial", 16, "bold"),  # 放大加粗 / enlarged & bold
+            text=lang_dict['vip_home_self_service_msg'].format(code=self.self_service_code),
+            font=("Arial", 16, "bold"),  
             fg="red"
         )
 
@@ -131,6 +132,7 @@ class HomeVIPView(Frame):
         self.controller.userModel.logout()
         self.controller.vipModel.logout()
         self.controller.view.show_frame("HomeView")
+        self.controller.view.frames["UpperView"].update_header()
 
     def update_language(self, lang_code):
         """
@@ -173,7 +175,7 @@ class HomeVIPView(Frame):
         
         # 如已顯示過自助取飲料提示，也應更新語言
         if self.self_service_label.cget("text"):
-            random_code = random.randint(1000, 9999)
+        # only update language, not code
             self.self_service_label.config(
-                text=lang_dict['vip_home_self_service_msg'].format(code=random_code)
+                text=lang_dict['vip_home_self_service_msg'].format(code=self.self_service_code)
             )

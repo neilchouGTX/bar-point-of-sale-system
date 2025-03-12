@@ -76,6 +76,8 @@ languages = {
         # For My_orders_view
         'Your_Orders': "Your Orders,",
         'Your_table_number_is': "Your table number is",
+        'payment': "Pay Now",
+        'Unknown, Please Order first.': "Unknown, Please Order first.",
 
         # For Home_VIP_view
         'vip_home_welcome': "Welcome!",
@@ -160,6 +162,8 @@ languages = {
         # For My_orders_view
         'Your_Orders': "您的訂單，",
         'Your_table_number_is': "您的桌號是",
+        'payment': "去付款",
+        'Unknown, Please Order first.': "未知，請先下單。",
 
         #For Home_VIP_view
         'vip_home_welcome': "歡迎！",
@@ -243,6 +247,8 @@ languages = {
         # For My_orders_view
         'Your_Orders': "Dina beställningar,",
         'Your_table_number_is': "Ditt bordnummer är",
+        'payment': "Betala Nu",
+        'Unknown, Please Order first.': "Okänd, Vänligen beställ först.",
 
         #For Home_VIP_view
         'vip_home_welcome': "Välkommen!",
