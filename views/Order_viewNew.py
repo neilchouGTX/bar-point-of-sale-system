@@ -89,7 +89,16 @@ class OrderViewNew(Frame):
         self.remove_item_btn = tk.Button(
             self.submenu_frame,
             text="Remove Item",
-            **self.button_style
+            height=1, width=3,
+            padx=15,
+            pady=5,
+            bd=0,
+            fg="red",
+            bg="white",
+            activebackground="white",
+            activeforeground="gray",
+            font=font.Font(root=self, family="Georgia", size=7, weight="bold"),
+            relief="flat"
         )
         self.remove_item_btn.grid(row=0, column=5, sticky="ew", padx=10, pady=5)
 
