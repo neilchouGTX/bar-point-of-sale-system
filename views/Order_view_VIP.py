@@ -97,7 +97,15 @@ class OrderViewVIP(Frame):
         self.remove_item_btn = tk.Button(
             self.submenu_frame,
             text="Remove Item",
-            **self.button_style
+            padx=15,
+            pady=7,
+            bd=0,
+            fg="red",
+            bg="white",
+            activebackground="white",
+            activeforeground="gray",
+            font=font.Font(root=self, family="Georgia", size=8, weight="bold"),
+            relief="flat"
         )
         self.remove_item_btn.grid(row=0, column=6, sticky="ew", padx=10, pady=5)
 
@@ -133,6 +141,7 @@ class OrderViewVIP(Frame):
     def createDrinkCard(self, drink):
         card = DrinkCard(self.inner_frame, drink, self.controller)
         card.grid(row=self.row, column=self.col, padx=10, pady=10)
+        self.bind("<Configure>", self.change_card_layout)
         self.col += 1
         if self.col > 4:  # Maximum 5 cards in a row
             self.col = 0
@@ -194,12 +203,29 @@ class OrderViewVIP(Frame):
             else:
                 continue
 
-
     def refresh(self, price, new_category=None):
         """ Switch category and reload data """
         self.price = price
         self.category = new_category
         self.load_drinks()
+
+    def change_card_layout(self, event):
+        window_width = event.width
+
+        if window_width < 750:
+            card_per_row = 2
+        elif 750 <= window_width < 1000:
+            card_per_row = 3
+        elif 1000 <= window_width < 1250:
+            card_per_row = 4
+        else:
+            card_per_row = 5
+
+        widgets = self.inner_frame.winfo_children()
+        for index, widget in enumerate(widgets):
+            row = index // card_per_row
+            col = index % card_per_row
+            widget.grid(row=row, column=col, sticky="ew", padx=10, pady=10)
 
     #更新點單视图的语言 / Update the language of the order view
     def update_language(self, lang_code):

@@ -30,8 +30,8 @@ def get_button_style2(root):
         "pady": 5,
         "bd": 0,
         "fg": "black",
-        "bg": "#520a07",
-        "activebackground": "#400705",
+        "bg": "white",
+        "activebackground": "white",
         "activeforeground": "gray",
         "font": custom_font,
         "relief": "flat"
