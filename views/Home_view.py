@@ -17,7 +17,7 @@ class HomeView(Frame):
 
     def display(self):
         # Background Image
-        self.bg_image = Image.open("images/ocean_background.jpg").resize((1500, 780))
+        self.bg_image = Image.open("images/ocean_background.jpg").resize((1600, 784))
         self.bg_photo = ImageTk.PhotoImage(self.bg_image)
 
         self.bg_label = tk.Label(self, image=self.bg_photo)
