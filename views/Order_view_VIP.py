@@ -213,9 +213,9 @@ class OrderViewVIP(Frame):
     def change_card_layout(self, event):
         window_width = event.width
 
-        if window_width < 700:
+        if window_width < 750:
             card_per_row = 2
-        elif 700 <= window_width < 1000:
+        elif 750 <= window_width < 1000:
             card_per_row = 3
         elif 1000 <= window_width < 1250:
             card_per_row = 4
