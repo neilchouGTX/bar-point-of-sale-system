@@ -263,11 +263,11 @@ class StaffView(tk.Frame):
 
     def on_Menu_Remove_click(self,event):
         
-        selected_item = self.table.identify_row(event.y)  # 獲取被點擊的行 ID
-        selected_column = self.table.identify_column(event.x)  # 獲取被點擊的列 ID（格式為 #1, #2, #3 ...）
+        selected_item = self.table.identify_row(event.y)  # get the position in row 
+        selected_column = self.table.identify_column(event.x)  # get the position in col（the formatis #1, #2, #3 ...）
 
         if selected_item and selected_column == "#3":
-            #item_values = self.table.item(selected_item, "values")  # 獲取該行的所有值
+            #item_values = self.table.item(selected_item, "values")  
             #id = item_values[0] 
             #name = item_values[1]
             index = self.table.index(selected_item)
@@ -276,11 +276,11 @@ class StaffView(tk.Frame):
             #print(f"id:{id}, name:{name}")
     
     def on_VIP_Menu_Remove_click(self,event):
-        selected_item = self.table.identify_row(event.y)  # 獲取被點擊的行 ID
-        selected_column = self.table.identify_column(event.x)  # 獲取被點擊的列 ID（格式為 #1, #2, #3 ...）
+        selected_item = self.table.identify_row(event.y)  # get the position in row 
+        selected_column = self.table.identify_column(event.x)  # get the position in col（the formatis #1, #2, #3 ...）
 
         if selected_item and selected_column == "#3":
-            #item_values = self.table.item(selected_item, "values")  # 獲取該行的所有值
+            #item_values = self.table.item(selected_item, "values")
             #id = item_values[0] 
             #name = item_values[1]
             index = self.table.index(selected_item)
