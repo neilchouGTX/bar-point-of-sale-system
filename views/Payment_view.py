@@ -14,9 +14,10 @@ class PaymentView(tk.Frame):
         self.pending_items = {}
 
         # 使用 grid 設定 3 行：row 0 = submenu, row 1 = 三欄主區域, row 2 = 底部 Pay 按鈕區域
-        self.grid_rowconfigure(0, weight=0)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=0)
+        self.grid_rowconfigure(0, weight=0)   # submenu
+        self.grid_rowconfigure(1, weight=1)   # main_area
+        self.grid_rowconfigure(2, weight=0)   # totals area
+        self.grid_rowconfigure(3, weight=0)   # bottom_frame
         self.grid_columnconfigure(0, weight=1)
 
         self.custom_font = get_custom_font(self)
@@ -57,6 +58,15 @@ class PaymentView(tk.Frame):
         )
         self.Table_label.pack(side="left", padx=10, pady=5)
 
+        self.overall_total_label = tk.Label(
+            self.submenu_frame,
+            text="Total: $0.00",
+            fg="white",
+            bg="#291802",
+            font=self.custom_font
+        )
+        self.overall_total_label.pack(side="right", padx=10, pady=5)
+
     def create_scrollable_frame(self, parent, bg_color):
         canvas = Canvas(parent, bg=bg_color, highlightthickness=0)
         scrollbar = Scrollbar(parent, orient="vertical", command=canvas.yview)
@@ -71,14 +81,14 @@ class PaymentView(tk.Frame):
         scrollbar.pack(side="right", fill="y")
         canvas.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(int(-1*(event.delta/120)), "units"))
         return frame
-
+    
     def create_main_area(self):
-        # 主區域（row=1）：建立一個包含三欄的容器，背景使用淺灰色
-        self.main_area = tk.Frame(self, bg="#f0f0f0")
+        # 設定固定高度，例如 500 像素
+        self.main_area = tk.Frame(self, bg="#f0f0f0", height=500)
         self.main_area.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
-        self.main_area.grid_columnconfigure(0, weight=1)
-        self.main_area.grid_columnconfigure(1, weight=1)
-        self.main_area.grid_columnconfigure(2, weight=1)
+        self.main_area.grid_propagate(False)
+        for col in range(3):
+            self.main_area.grid_columnconfigure(col, weight=1)
 
         # 左側欄：未付款
         self.left_container = tk.Frame(self.main_area, bg="#f0f0f0")
@@ -103,10 +113,19 @@ class PaymentView(tk.Frame):
         self.paid_label.pack(anchor="n", pady=5)
         self.right_frame = self.create_scrollable_frame(self.right_container, "#f0f0f0")
 
-        # 下方：Pay 按鈕放在三欄下方正中（row=2）
+        # 下方：建立 totals 區域（row=2），然後 Pay 按鈕放在 totals 下方（row=3）
+        self.total_area = tk.Frame(self, bg="#f0f0f0")
+        self.total_area.grid(row=2, column=0, sticky="ew", padx=5, pady=5)
+        self.left_total_label = tk.Label(self.total_area, text="Unpaid Total: $0.00", bg="#f0f0f0", font=self.custom_font)
+        self.left_total_label.pack(side="left", expand=True, fill="x", padx=5)
+        self.middle_total_label = tk.Label(self.total_area, text="Pending Total: $0.00", bg="#f0f0f0", font=self.custom_font)
+        self.middle_total_label.pack(side="left", expand=True, fill="x", padx=5)
+        self.right_total_label = tk.Label(self.total_area, text="Paid Total: $0.00", bg="#f0f0f0", font=self.custom_font)
+        self.right_total_label.pack(side="left", expand=True, fill="x", padx=5)
+
         self.bottom_frame = tk.Frame(self, bg="white")
-        self.bottom_frame.grid(row=2, column=0, pady=10)
-        self.pay_btn = Button(
+        self.bottom_frame.grid(row=3, column=0, pady=10)
+        self.pay_btn = tk.Button(
             self.bottom_frame,
             text="Pay",
             **self.button_style,
@@ -114,11 +133,59 @@ class PaymentView(tk.Frame):
         )
         self.pay_btn.pack(pady=5)
 
+    # def create_main_area(self):
+    #     # 主區域（row=1）：建立一個包含三欄的容器，背景使用淺灰色
+    #     self.main_area = tk.Frame(self, bg="#f0f0f0")
+    #     self.main_area.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
+    #     self.main_area.grid_columnconfigure(0, weight=1)
+    #     self.main_area.grid_columnconfigure(1, weight=1)
+    #     self.main_area.grid_columnconfigure(2, weight=1)
+
+    #     # 左側欄：未付款
+    #     self.left_container = tk.Frame(self.main_area, bg="#f0f0f0")
+    #     self.left_container.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+    #     self.unpaid_label = Label(self.left_container, text="Unpaid Items", bg="#f0f0f0", font=self.custom_font)
+    #     self.unpaid_label.pack(anchor="n", pady=5)
+    #     self.left_frame = self.create_scrollable_frame(self.left_container, "#f0f0f0")
+
+    #     # 中間欄：待付款
+    #     self.middle_container = tk.Frame(self.main_area, bg="#f0f0f0")
+    #     self.middle_container.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+    #     self.pending_label = Label(self.middle_container, text="Pending Items", bg="#f0f0f0", font=self.custom_font)
+    #     self.pending_label.pack(anchor="n", pady=5)
+    #     self.middle_frame = self.create_scrollable_frame(self.middle_container, "#f0f0f0")
+    #     # 儲存中間欄容器作為拖放判斷區域
+    #     self.pending_area = self.middle_container
+
+    #     # 右側欄：已付款
+    #     self.right_container = tk.Frame(self.main_area, bg="#f0f0f0")
+    #     self.right_container.grid(row=0, column=2, sticky="nsew", padx=5, pady=5)
+    #     self.paid_label = Label(self.right_container, text="Paid Items", bg="#f0f0f0", font=self.custom_font)
+    #     self.paid_label.pack(anchor="n", pady=5)
+    #     self.right_frame = self.create_scrollable_frame(self.right_container, "#f0f0f0")
+
+    #     # 下方：Pay 按鈕放在三欄下方正中（row=2）
+    #     self.bottom_frame = tk.Frame(self, bg="white")
+    #     self.bottom_frame.grid(row=2, column=0, pady=10)
+    #     self.pay_btn = Button(
+    #         self.bottom_frame,
+    #         text="Pay",
+    #         **self.button_style,
+    #         command=self.pay_pending
+    #     )
+    #     self.pay_btn.pack(pady=5)
+
     def load_payment_items(self):
+        # 初始化金額統計
+        left_total = 0.0
+        middle_total = 0.0
+        right_total = 0.0
+
         # 清空所有欄位
         for frame in (self.left_frame, self.middle_frame, self.right_frame):
             for widget in frame.winfo_children():
                 widget.destroy()
+
         orders = self.controller.get_my_orders()
         for order in orders:
             if order.tableNumber == self.table_number:
@@ -126,24 +193,35 @@ class PaymentView(tk.Frame):
                     paid_qty = item.paid
                     pending_qty = self.pending_items.get(item.id, 0)
                     unpaid_qty = item.amount - paid_qty - pending_qty
+                    unit_price = item.price
                     # 如果有已付款部分，就在右側顯示
                     if paid_qty > 0:
                         card = PaymentItemCard(self.right_frame, item, self.controller,
-                                            state="paid", display_qty=paid_qty)
+                                               state="paid", display_qty=paid_qty)
                         card.pack(fill="x", padx=5, pady=5)
+                        right_total += paid_qty * unit_price
                     # 如果有未付款部分，就在左側顯示（未付款的部分可操作加入預付款）
                     if unpaid_qty > 0:
                         card = PaymentItemCard(self.left_frame, item, self.controller,
-                                            state="unpaid", display_qty=unpaid_qty,
-                                            on_single=self.move_single, on_all=self.move_all,
-                                            drag_callback=self.drag_move_all, pending_area=self.pending_area)
+                                               state="unpaid", display_qty=unpaid_qty,
+                                               on_single=self.move_single, on_all=self.move_all,
+                                               drag_callback=self.drag_move_all, pending_area=self.pending_area)
                         card.pack(fill="x", padx=5, pady=5)
-                    # 如果有預付款部分，就在中間顯示，點擊還原
+                        left_total += unpaid_qty * unit_price
+                    # 如果有預付款部分，就在中間顯示，點擊可還原回左欄
                     if pending_qty > 0:
                         card = PaymentItemCard(self.middle_frame, item, self.controller,
-                                            state="pending", display_qty=pending_qty,
-                                            on_pending_click=self.remove_pending)
+                                               state="pending", display_qty=pending_qty,
+                                               on_pending_click=self.remove_pending)
                         card.pack(fill="x", padx=5, pady=5)
+                        middle_total += pending_qty * unit_price
+
+        # 更新各欄總金額標籤
+        self.left_total_label.config(text=f"Unpaid Total: ${left_total:.2f}")
+        self.middle_total_label.config(text=f"Pending Total: ${middle_total:.2f}")
+        self.right_total_label.config(text=f"Paid Total: ${right_total:.2f}")
+        overall = left_total + middle_total + right_total
+        self.overall_total_label.config(text=f"Total: ${overall:.2f}")
 
 
     def move_single(self, item):
@@ -280,11 +358,11 @@ class PaymentItemCard(tk.Frame):
             self.image_label.pack(side="left", padx=5)
         # 資訊顯示：未付款時不顯示已付款數值
         if self.state == "unpaid":
-            info_text = f"Name: {self.drink_name}\nQty: {self.display_qty}"
+            info_text = f"Name: {self.drink_name}\nQty: {self.display_qty}\nUnit: ${self.item_data.price:.2f}"
         elif self.state == "pending":
-            info_text = f"Name: {self.drink_name}\nPending: {self.display_qty}"
+            info_text = f"Name: {self.drink_name}\nPending: {self.display_qty}\nUnit: ${self.item_data.price:.2f}"
         else:
-            info_text = f"Name: {self.drink_name}\nPaid: {self.item_data.paid}"
+            info_text = f"Name: {self.drink_name}\nPaid: {self.item_data.paid}\nUnit: ${self.item_data.price:.2f}"
         self.info_label = Label(self.main_frame, text=info_text, bg="#B3E5FC", font=self.custom_font, justify="left")
         self.info_label.pack(side="left", padx=5)
 
