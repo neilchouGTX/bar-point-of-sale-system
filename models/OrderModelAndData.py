@@ -120,6 +120,7 @@ class OrderModel:
         new_order = Order(table_number, order_items, total_price, fullPaid=False)
 
         existing_order = None
+        self.refresh()
         for order in self.staticData:
             if order.tableNumber == table_number:
                 existing_order = order
@@ -133,6 +134,7 @@ class OrderModel:
                 for exist_item in existing_order.orderItems:
                     if str(exist_item.id) == str(new_item.id):
                         exist_item.amount += new_item.amount
+                        new_item.paid = exist_item.paid
                         found = True
                         break
                 if not found:
@@ -162,35 +164,89 @@ class OrderModel:
             order_objects.append(order_obj)
         
         return order_objects
+    
+    def orders_object_to_json(self, orders):
+        orders_data = []
+        for order in orders:
+            order_dict = {
+                "tableNumber": order.tableNumber,
+                "totalPrice": order.totalPrice,
+                "fullPaid": order.fullPaid,
+                "orderItems": []
+            }
+            for item in order.orderItems:
+                item_dict = {
+                    "paid": item.paid,
+                    "id": item.id,
+                    "amount": item.amount,
+                    "price": item.price
+                }
+                order_dict["orderItems"].append(item_dict)
+            orders_data.append(order_dict)
+
+        with open(self.db_path, "w", encoding="utf-8") as file:
+            json.dump(orders_data, file, ensure_ascii=False, indent=4)
         
-        # merged_orders = {}
+    def archive_orders_to_json(self, orders):
+        orders_data = []
+        for order in orders:
+            order_dict = {
+                "tableNumber": order.tableNumber,
+                "totalPrice": order.totalPrice,
+                "fullPaid": order.fullPaid,
+                "orderItems": []
+            }
+            for item in order.orderItems:
+                item_dict = {
+                    "id": int(item.id),
+                    "amount": item.amount,
+                    "price": item.price,
+                    "paid": item.paid
+                }
+                order_dict["orderItems"].append(item_dict)
+            orders_data.append(order_dict)
+        return orders_data
+    
+    def refresh(self):
+        self.loadData()
+        self.jsonToObject()
+        self.saveData()
 
-        # for order in orders:
-        #     table_number = order["tableNumber"]
-
-        #     if table_number not in merged_orders:
-        #         merged_orders[table_number] = {
-        #             "totalPrice": 0,
-        #             "orderItems": {}
-        #         }
-
-        #     merged_orders[table_number]["totalPrice"] += order["totalPrice"]
-
-        #     for item in order["orderItems"]:
-        #         item_id = item["id"]
-        #         if item_id in merged_orders[table_number]["orderItems"]:
-        #             merged_orders[table_number]["orderItems"][item_id].amount += item["amount"]
-        #             merged_orders[table_number]["orderItems"][item_id].paid += item.get("paid", 0)
-        #         else:
-        #             merged_orders[table_number]["orderItems"][item_id] = OrderItem(item["id"], item["amount"], item["price"], paid=item.get("paid", 0))
-
-        # merged_orders_list = [
-        #     Order(
-        #         table_number=table,
-        #         orderItems=list(details["orderItems"].values()),
-        #         totalPrice=details["totalPrice"]
-        #     )
-        #     for table, details in merged_orders.items()
-        # ]
+    def archive_full_paid_order(self, table_number):
+        """
+        檢查指定桌號的訂單是否全數付清：
+        - 如果該桌所有訂單的每個 OrderItem 的 paid >= amount，
+            則將該訂單的 fullPaid 設為 True，
+            並從目前訂單中刪除，再將其附加到 dutchman_legacy_order.json 中。
+        """
+        # 先過濾出要處理的訂單與其餘訂單
+        self.refresh()
+        full_paid_orders = []
+        remaining_orders = []
+        for order in self.staticData:
+            if order.tableNumber == table_number:
+                # 若每個 item 的 paid 都大於或等於 amount
+                if all(item.paid >= item.amount for item in order.orderItems):
+                    order.fullPaid = True
+                    full_paid_orders.append(order)
+                else:
+                    remaining_orders.append(order)
+            else:
+                remaining_orders.append(order)
         
-        # return merged_orders_list
+        # 更新目前的訂單資料
+        if full_paid_orders:
+            self.staticData = remaining_orders
+            self.saveData()
+            # 接著寫入 legacy JSON 檔案
+            legacy_path = os.path.join(os.getcwd(), "DBFilesJson", "dutchman_legacy_order.json")
+            if os.path.exists(legacy_path):
+                with open(legacy_path, "r", encoding="utf-8") as file:
+                    legacy_data = json.load(file)
+            else:
+                legacy_data = []
+            # 將 full_paid_orders 轉換成 dict 格式
+            full_paid_data = self.archive_orders_to_json(full_paid_orders)
+            legacy_data.extend(full_paid_data)
+            with open(legacy_path, "w", encoding="utf-8") as file:
+                json.dump(legacy_data, file, ensure_ascii=False, indent=4)

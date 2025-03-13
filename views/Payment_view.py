@@ -39,7 +39,7 @@ class PaymentView(tk.Frame):
             self.submenu_frame,
             text="Back",
             **self.button_style,
-            command=lambda: self.controller.view.show_frame("MyOrderView")
+            command=lambda: (self.controller.view.show_frame("MyOrderView"), self.controller.refreshMyOrder())
         )
         self.back_btn.pack(side="left", padx=10, pady=5)
         self.pay_all_btn = Button(
@@ -123,27 +123,28 @@ class PaymentView(tk.Frame):
         for order in orders:
             if order.tableNumber == self.table_number:
                 for item in order.orderItems:
-                    if item.paid >= item.amount:
-                        # 完全付款品項放右欄
+                    paid_qty = item.paid
+                    pending_qty = self.pending_items.get(item.id, 0)
+                    unpaid_qty = item.amount - paid_qty - pending_qty
+                    # 如果有已付款部分，就在右側顯示
+                    if paid_qty > 0:
                         card = PaymentItemCard(self.right_frame, item, self.controller,
-                                               state="paid", display_qty=item.amount)
+                                            state="paid", display_qty=paid_qty)
                         card.pack(fill="x", padx=5, pady=5)
-                    else:
-                        pending = self.pending_items.get(item.id, 0)
-                        unpaid_remaining = item.amount - item.paid - pending
-                        if unpaid_remaining > 0:
-                            # 未付款部分放左欄，且不顯示 paid 標籤，加入「單件」與「全部」按鈕，並啟用拖曳
-                            card = PaymentItemCard(self.left_frame, item, self.controller,
-                                                   state="unpaid", display_qty=unpaid_remaining,
-                                                   on_single=self.move_single, on_all=self.move_all,
-                                                   drag_callback=self.drag_move_all, pending_area=self.pending_area)
-                            card.pack(fill="x", padx=5, pady=5)
-                        if pending > 0:
-                            # 待付款部分放中間欄，點擊可還原回左欄
-                            card = PaymentItemCard(self.middle_frame, item, self.controller,
-                                                   state="pending", display_qty=pending,
-                                                   on_pending_click=self.remove_pending)
-                            card.pack(fill="x", padx=5, pady=5)
+                    # 如果有未付款部分，就在左側顯示（未付款的部分可操作加入預付款）
+                    if unpaid_qty > 0:
+                        card = PaymentItemCard(self.left_frame, item, self.controller,
+                                            state="unpaid", display_qty=unpaid_qty,
+                                            on_single=self.move_single, on_all=self.move_all,
+                                            drag_callback=self.drag_move_all, pending_area=self.pending_area)
+                        card.pack(fill="x", padx=5, pady=5)
+                    # 如果有預付款部分，就在中間顯示，點擊還原
+                    if pending_qty > 0:
+                        card = PaymentItemCard(self.middle_frame, item, self.controller,
+                                            state="pending", display_qty=pending_qty,
+                                            on_pending_click=self.remove_pending)
+                        card.pack(fill="x", padx=5, pady=5)
+
 
     def move_single(self, item):
         pending = self.pending_items.get(item.id, 0)
@@ -175,7 +176,8 @@ class PaymentView(tk.Frame):
                     if pending > 0:
                         item.paid += pending
         self.pending_items.clear()
-        self.controller.order_model.saveData()
+        self.controller.payment_saveData(orders)
+        self.controller.archive_full_paid_order(self.table_number)
         self.load_payment_items()
         self.refresh()
 
@@ -290,10 +292,10 @@ class PaymentItemCard(tk.Frame):
         if self.state == "unpaid":
             self.btn_frame = tk.Frame(self, bg="#B3E5FC")
             self.btn_frame.pack(fill="x", padx=5, pady=5)
-            self.single_btn = Button(self.btn_frame, text="單件", **self.button_style,
+            self.single_btn = Button(self.btn_frame, text="one", **self.button_style,
                                        command=lambda: self.on_single(self.item_data) if self.on_single else None)
             self.single_btn.pack(side="left", padx=2)
-            self.all_btn = Button(self.btn_frame, text="全部", **self.button_style,
+            self.all_btn = Button(self.btn_frame, text="All", **self.button_style,
                                   command=lambda: self.on_all(self.item_data) if self.on_all else None)
             self.all_btn.pack(side="left", padx=2)
         # pending 狀態下，點擊品項可還原回未付款

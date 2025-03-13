@@ -349,6 +349,10 @@ class Controller():
         self.cartModel.clear_cart()
         self.cart_refresh()
         self.refreshSendOrderView()
+    def payment_saveData(self, orders):
+        self.orderModel.orders_object_to_json(orders)
+    def archive_full_paid_order(self, table_number):
+        self.orderModel.archive_full_paid_order(table_number)
     
     def refreshMyOrder(self):
         myOrderView = self.view.frames.get("MyOrderView")
