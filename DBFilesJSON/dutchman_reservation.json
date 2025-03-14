@@ -1,0 +1,14 @@
+[
+    {
+        "table_number": 2,
+        "time": "12:00",
+        "people": 1,
+        "status": "Pending"
+    },
+    {
+        "table_number": 2,
+        "time": "12:00",
+        "people": 1,
+        "status": "Pending"
+    }
+]
