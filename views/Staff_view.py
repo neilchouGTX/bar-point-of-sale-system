@@ -29,7 +29,6 @@ class StaffView(tk.Frame):
 
 
     def setup_ui(self):
-        """Set up the UI with grid layout."""
         # Title
         title_label = tk.Label(self, text="Staff Panel", font=("Georgia", 24, "bold"), bg="#A7C7E7", fg="#000435")
         title_label.grid(row=0, column=0, columnspan=4, pady=20)
@@ -59,7 +58,7 @@ class StaffView(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
     def switch_page(self, page):
-        """Switch the current page and update the table."""
+        #Switch the current page and update the table."""
         self.current_page = page
         self.stock_page = 1  
         self.stock_filter = ""  #
@@ -101,27 +100,39 @@ class StaffView(tk.Frame):
             self.load_VIP_Menu()
 
     def load_orders(self):
-        "Populate table with order data."
-        columns = ("table_number", "beer", "amount", "action")
+        columns = ("table", "beer", "amount", "complete", "cancel")
         self.table["columns"] = columns
         for col in columns:
             self.table.heading(col, text=col.capitalize(), anchor="w")
-            self.table.column(col, width=150, anchor="w")
+            self.table.column(col, width=150 if col in ("table", "beer", "amount") else 100, anchor="w")
 
         self.controller.orderModel.loadData()
         self.controller.orderModel.jsonToObject()
         orders = self.controller.orderModel.staticData
-        for order in orders:
+        for order_index, order in enumerate(orders):
             table_number = order.tableNumber
-            for item in order.orderItems:
-                # Convert item.id to string to match BeerModel's data format
+            for item_index, item in enumerate(order.orderItems):
                 beer_data = self.controller.beerModel.getDataById(str(item.id))
                 beer_name = beer_data.namn if beer_data else "Unknown"
                 amount = item.amount
-                self.table.insert("", "end", values=(table_number, beer_name, amount, ""), tags=("action_row",))
+                iid = f"order_{order_index}_item_{item_index}"
+                self.table.insert("", "end", iid=iid, values=(table_number, beer_name, amount, "Complete", "Cancel"))
 
-        for iid in self.table.get_children():
-            self.action_buttons(iid, ["complete", "cancel"], self.order_action)
+        self.table.bind("<Button-1>", self.on_order_action_click)
+
+    def on_order_action_click(self, event):
+        selected_item = self.table.identify_row(event.y)
+        selected_column = self.table.identify_column(event.x)
+        if selected_item and selected_column:
+            column_index = int(selected_column[1:]) - 1  # Convert '#1' to 0, '#2' to 1, etc.
+            column_name = self.table["columns"][column_index]
+            if column_name in ["complete", "cancel"]:
+                # Parse iid to get order and item indices
+                parts = selected_item.split("_")
+                if len(parts) == 4 and parts[0] == "order" and parts[2] == "item":
+                    order_index = int(parts[1])
+                    item_index = int(parts[3])
+                    self.order_action(column_name, order_index, item_index)
 
     def load_stock(self):
         columns = ("id", "beer", "amount", "action")
@@ -166,40 +177,110 @@ class StaffView(tk.Frame):
         self.next_btn.grid(row=0, column=4, padx=5)
 
     def prev_stock_page(self):
-        """Go to the previous stock page."""
         if self.stock_page > 1:
             self.stock_page -= 1
             self.load_page("stock")
 
     def next_stock_page(self):
-        """Go to the next stock page."""
         self.stock_page += 1
         self.load_page("stock")
 
     def apply_stock_filter(self, filter_text):
-        """Apply filter to stock data and reload."""
         self.stock_filter = filter_text
         self.stock_page = 1
         self.load_page("stock")
 
     def load_reservations(self):
-        """Populate table with reservation data (placeholder)."""
-        columns = ("table_number", "time", "status", "action")
+        # Define columns
+        # Define columns with "People" between "Table_number" and "Time"
+        columns = ("table", "people", "time", "status", "complete", "cancel")
         self.table["columns"] = columns
         for col in columns:
             self.table.heading(col, text=col.capitalize(), anchor="w")
-            self.table.column(col, width=150, anchor="w")
+            self.table.column(col, width=150 if col in ("table", "people", "time", "status") else 100, anchor="w")
 
-        # Placeholder data
-        reservations = [{"id": "1", "table_number": "3", "time": "18:00", "status": "Pending"}]
-        for res in reservations:
-            self.table.insert("", "end", text=res["id"], values=(res["table_number"], res["time"], res["status"], ""), tags=("action_row",))
+        # Populate with reservation data
+            reservations = self.controller.get_reservations()  # List of Reservation objects
+        for res_index, res in enumerate(reservations):
+            iid = f"res_{res_index}"
+            self.table.insert("", "end", iid=iid, values=(res.table_number, res.people, res.time, res.status, "Complete", "Cancel"))
 
-        for iid in self.table.get_children():
-            self.action_buttons(iid, ["confirm", "cancel"], self.reservation_action)
+        # Bind click event for actions
+        self.table.bind("<Button-1>", self.on_reservation_action_click)
+
+        # Add reservation creation frame
+        add_frame = tk.Frame(self.table_frame, bg="white")
+        add_frame.pack(pady=10)
+
+        tk.Label(add_frame, text="Add Reservation", font=self.custom_font, bg="white").pack(pady=5)
+
+        # Table number input
+        tk.Label(add_frame, text="Table Number:", bg="white").pack(side="left", padx=5)
+        self.table_number_entry = tk.Entry(add_frame, width=10)
+        self.table_number_entry.pack(side="left", padx=5)
+
+        # Number of people
+        tk.Label(add_frame, text="People:", bg="white").pack(side="left", padx=5)
+        self.people_var = tk.IntVar(value=1)
+        people_frame = tk.Frame(add_frame, bg="white")
+        people_frame.pack(side="left", padx=5)
+        tk.Button(people_frame, text="-", command=lambda: self.adjust_people(-1), width=2).pack(side="left")
+        tk.Label(people_frame, textvariable=self.people_var, width=3, bg="white").pack(side="left")
+        tk.Button(people_frame, text="+", command=lambda: self.adjust_people(1), width=2).pack(side="left")
+
+        # Reservation time
+        tk.Label(add_frame, text="Time:", bg="white").pack(side="left", padx=5)
+        self.time_var = tk.StringVar(value="12:00")
+        time_frame = tk.Frame(add_frame, bg="white")
+        time_frame.pack(side="left", padx=5)
+        tk.Button(time_frame, text="-30m", command=lambda: self.adjust_time(-30), width=5).pack(side="left")
+        tk.Entry(time_frame, textvariable=self.time_var, width=10).pack(side="left")
+        tk.Button(time_frame, text="+30m", command=lambda: self.adjust_time(30), width=5).pack(side="left")
+
+        # Add button
+        add_btn = tk.Button(add_frame, text="Add", command=self.add_reservation)
+        add_btn.pack(side="left", padx=10)
+
+    def on_reservation_action_click(self, event):
+        selected_item = self.table.identify_row(event.y)
+        selected_column = self.table.identify_column(event.x)
+        if selected_item and selected_column:
+            column_index = int(selected_column[1:]) - 1  # Convert '#1' to 0, '#2' to 1, etc.
+            column_name = self.table["columns"][column_index]
+            if column_name in ["complete", "cancel"]:
+                res_index = int(selected_item.split("_")[1])
+                self.reservation_action(column_name, res_index)
+
+    def add_reservation(self):
+        table_number = self.table_number_entry.get()
+        people = self.people_var.get()
+        time = self.time_var.get()
+        if not table_number or not time:
+            mbox.showerror("Error", "Table number and time are required.")
+            return
+        try:
+            self.controller.add_reservation(table_number, people, time)
+            self.load_page("reservation")  # Refresh the page
+            mbox.showinfo("Success", "Reservation added.")
+        except Exception as e:
+            mbox.showerror("Error", f"Failed to add reservation: {str(e)}")
+
+    def adjust_people(self, delta):
+        #Adjust the number of people for the new reservation.
+        current = self.people_var.get()
+        new_value = max(1, current + delta)  # Ensure at least 1 person
+        self.people_var.set(new_value)
+
+    def adjust_time(self, minutes):
+        from datetime import datetime, timedelta
+        try:
+            current_time = datetime.strptime(self.time_var.get(), "%H:%M")
+            new_time = current_time + timedelta(minutes=minutes)
+            self.time_var.set(new_time.strftime("%H:%M"))
+        except ValueError:
+            mbox.showerror("Error", "Invalid time format. Use HH:MM.")
 
     def load_menu(self):
-        """Populate table with menu data from dutchman_menu.json and add menu addition section."""
         columns = ("id", "name", "action")
         self.table["columns"] = columns
         for col in columns:
@@ -230,7 +311,6 @@ class StaffView(tk.Frame):
         add_btn = tk.Button(add_frame, text="Add", **self.button_style, command=self.add_menu_item)
         add_btn.pack(pady=10)
     def load_VIP_Menu(self):
-        """Populate table with menu data from dutchman_menu.json and add menu addition section."""
         columns = ("id", "name", "action")
         self.table["columns"] = columns
         for col in columns:
@@ -334,18 +414,20 @@ class StaffView(tk.Frame):
         self.table.set(iid, column=len(values)-1, value=action_frame)
         self.table.item(iid, values=values)
 
-    def order_action(self, action, iid):
-        "Handle order actions."
-        table_number = self.table.item(iid, "values")[0]
-        if action == "complete":
-            self.controller.orderModel.staticData = [
-                order for order in self.controller.orderModel.staticData
-                if order.tableNumber != table_number
-            ]
-            self.controller.orderModel.saveData()
-            self.load_page("order")
-        elif action == "cancel":
-            print(f"Cancel order for table {table_number}")
+    def order_action(self, action, order_index, item_index):
+        "Handle order actions for a specific item."
+        orders = self.controller.orderModel.staticData
+        if 0 <= order_index < len(orders):
+            order = orders[order_index]
+            if 0 <= item_index < len(order.orderItems):
+                if action in ["complete", "cancel"]:
+                    # Remove the item from the order
+                    del order.orderItems[item_index]
+                    # Remove the order if it has no items left
+                    if not order.orderItems:
+                        del orders[order_index]
+                    self.controller.orderModel.saveData()
+                    self.load_page("order")
 
     def stock_action(self, action, iid):
         "Handle stock actions."
@@ -356,12 +438,14 @@ class StaffView(tk.Frame):
                 self.controller.updateStockData(bev_id, new_amount)
                 self.load_page("stock")
 
-    def reservation_action(self, action, iid):
-        """Handle reservation actions (placeholder)."""
-        print(f"Reservation action: {action} on item {iid}")
+    def reservation_action(self, action, res_index):
+        if action == "complete":
+            self.controller.complete_reservation(res_index)
+        elif action == "cancel":
+            self.controller.cancel_reservation(res_index)
+        self.load_page("reservation")  # Refresh the page
 
     def menu_action(self, action, iid):
-        """Handle menu actions."""
         if action == "remove":
             item_id = self.table.item(iid, "values")[0]
             self.controller.removeItemFromMenu(item_id)
