@@ -12,8 +12,9 @@ class Controller():
         self.beerModel = BeerModel()
         self.cartModel = CartModel()
         self.orderModel = OrderModel()
-        self.stockModel = StockModel()  # Now using the JSON-backed stock model
+        self.stockModel = StockModel()  
         self.menuModel = MenuModel()
+        self.reservationModel = ReservationModelAndData()
         # For demonstration, initialize a dummy orders list
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
         self.table_number = -1
@@ -405,3 +406,23 @@ class Controller():
     
     def removeItemFromVIPMenu(self,index):
         self.menuModel.removeVIPItem(index)
+
+    def get_reservations(self):
+        #Retrieve all reservations from the model.
+        return self.reservationModel.get_reservations()
+
+    def add_reservation(self, table_number, people, time):
+        #Add a new reservation with validation.
+        try:
+            table_number = int(table_number)
+        except ValueError:
+            raise ValueError("Table number must be an integer.")
+        self.reservationModel.add_reservation(table_number, time, people)
+
+    def complete_reservation(self, index):
+        #Mark a reservation as completed.
+        self.reservationModel.remove_reservation(index)
+
+    def cancel_reservation(self, index):
+        #Mark a reservation as canceled.
+        self.reservationModel.remove_reservation(index)
