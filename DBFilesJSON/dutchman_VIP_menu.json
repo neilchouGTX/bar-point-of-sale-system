@@ -1,18 +1,18 @@
 [
     {
-        "id": "999999002",
-        "name": "French Fries"
+        "id": "1001202",
+        "name": "Dworek Vodka"
+    },
+    {
+        "id": "10001",
+        "name": "Braastad XO"
     },
     {
         "id": "999999003",
         "name": "Onion Rings"
     },
     {
-        "id": "999999004",
-        "name": "Chicken Wings"
-    },
-    {
-        "id": "1001202",
-        "name": "Dworek Vodka"
+        "id": "999999007",
+        "name": "Hot Dog"
     }
 ]

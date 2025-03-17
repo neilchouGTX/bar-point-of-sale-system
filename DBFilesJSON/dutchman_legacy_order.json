@@ -1,2 +1,117 @@
 [
+    {
+        "tableNumber": 3,
+        "totalPrice": 580.0,
+        "fullPaid": true,
+        "orderItems": [
+            {
+                "id": 1001201,
+                "amount": 1,
+                "price": 190.0,
+                "paid": 1
+            },
+            {
+                "id": 1001,
+                "amount": 1,
+                "price": 195.0,
+                "paid": 1
+            },
+            {
+                "id": 1003802,
+                "amount": 1,
+                "price": 195.0,
+                "paid": 1
+            }
+        ]
+    },
+    {
+        "tableNumber": 5,
+        "totalPrice": 2068.7,
+        "fullPaid": true,
+        "orderItems": [
+            {
+                "id": 1001201,
+                "amount": 1,
+                "price": 190.0,
+                "paid": 1
+            },
+            {
+                "id": 1003802,
+                "amount": 1,
+                "price": 195.0,
+                "paid": 1
+            },
+            {
+                "id": 1004703,
+                "amount": 1,
+                "price": 43.7,
+                "paid": 1
+            },
+            {
+                "id": 1005502,
+                "amount": 1,
+                "price": 481.0,
+                "paid": 1
+            },
+            {
+                "id": 1005401,
+                "amount": 1,
+                "price": 1159.0,
+                "paid": 1
+            }
+        ]
+    },
+    {
+        "tableNumber": 7,
+        "totalPrice": 580.0,
+        "fullPaid": true,
+        "orderItems": [
+            {
+                "id": 1001,
+                "amount": 1,
+                "price": 195.0,
+                "paid": 0,
+                "served": 0
+            },
+            {
+                "id": 1001201,
+                "amount": 1,
+                "price": 190.0,
+                "paid": 0,
+                "served": 0
+            },
+            {
+                "id": 1003802,
+                "amount": 1,
+                "price": 195.0,
+                "paid": 0,
+                "served": 0
+            }
+        ]
+    },
+    {
+        "tableNumber": 4,
+        "totalPrice": 1649.0,
+        "fullPaid": true,
+        "orderItems": [
+            {
+                "id": 1001201,
+                "amount": 2,
+                "price": 190.0,
+                "paid": 2
+            },
+            {
+                "id": 1005401,
+                "amount": 1,
+                "price": 1159.0,
+                "paid": 1
+            },
+            {
+                "id": 999999001,
+                "amount": 1,
+                "price": 110.0,
+                "paid": 1
+            }
+        ]
+    }
 ]

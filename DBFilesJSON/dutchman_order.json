@@ -1,1 +1,40 @@
-[]
+[
+    {
+        "tableNumber": 2,
+        "totalPrice": 3914.0,
+        "fullPaid": false,
+        "orderItems": [
+            {
+                "paid": 0,
+                "id": 1005401,
+                "amount": 1,
+                "price": 1159.0
+            },
+            {
+                "paid": 0,
+                "id": 999999001,
+                "amount": 1,
+                "price": 110.0
+            },
+            {
+                "paid": 0,
+                "id": 1005001,
+                "amount": 1,
+                "price": 899.0
+            }
+        ]
+    },
+    {
+        "tableNumber": 3,
+        "totalPrice": 195.0,
+        "fullPaid": false,
+        "orderItems": [
+            {
+                "paid": 0,
+                "id": 1001,
+                "amount": 1,
+                "price": 195.0
+            }
+        ]
+    }
+]
