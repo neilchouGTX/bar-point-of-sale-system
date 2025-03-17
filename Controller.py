@@ -369,9 +369,24 @@ class Controller():
         return self.orderModel.merge_orders_to_objects()
 
 
-    def addItemToMenu(self,menuItem):
-        theItem=menuItem
-        self.menuModel.addItem(theItem)
+    def addItemToMenu(self, menuItem):
+        self.menuModel.addItem(menuItem)
+        if menuItem.id not in self.stockModel.stock:
+            beer_data = self.beerModel.getDataById(menuItem.id)
+            if beer_data:
+                new_beverage = {
+                    "nr": beer_data.nr,
+                    "artikelid": beer_data.artikelid,
+                    "varnummer": getattr(beer_data, 'varnummer', ''),  # Default to empty string if missing
+                    "namn": beer_data.namn,
+                    "namn2": getattr(beer_data, 'namn2', ''),  # Default for optional field
+                    "prisinklmoms": beer_data.prisinklmoms,
+                    "volymiml": getattr(beer_data, 'volymiml', None),  # Default for optional field
+                    "total_stock": 10
+                }
+                self.stockModel.add_beverage(new_beverage)
+            else:
+                print(f"Beer with id {menuItem.id} not found in beerModel.")
     
     def removeItemFromMenu(self,index):
         self.menuModel.removeItem(index)
@@ -400,12 +415,33 @@ class Controller():
         #print(theBeerStaticData)
         return theBeerStaticData
     
-    def addItemToVIPMenu(self,menuItem):
-        theItem=menuItem
-        self.menuModel.addVIPItem(theItem)
+    def addItemToVIPMenu(self, menuItem):
+        self.menuModel.addVIPItem(menuItem)
+        if menuItem.id not in self.stockModel.stock:
+            beer_data = self.beerModel.getDataById(menuItem.id)
+            if beer_data:
+                new_beverage = {
+                    "nr": beer_data.nr,
+                    "artikelid": beer_data.artikelid,
+                    "varnummer": getattr(beer_data, 'varnummer', ''),  # Default to empty string if missing
+                    "namn": beer_data.namn,
+                    "namn2": getattr(beer_data, 'namn2', ''),  # Default for optional field
+                    "prisinklmoms": beer_data.prisinklmoms,
+                    "volymiml": getattr(beer_data, 'volymiml', None),  # Default for optional field
+                    "total_stock": 10
+                }
+                self.stockModel.add_beverage(new_beverage)
+            else:
+                print(f"Beer with id {menuItem.id} not found in beerModel.")
     
     def removeItemFromVIPMenu(self,index):
         self.menuModel.removeVIPItem(index)
+
+    def get_menu_and_vip_menu_ids(self):
+        menu_items = self.menuModel.getData()
+        vip_menu_items = self.menuModel.getVIPData()
+        all_ids = set(item.id for item in menu_items).union(set(item.id for item in vip_menu_items))
+        return all_ids
 
     def get_reservations(self):
         #Retrieve all reservations from the model.

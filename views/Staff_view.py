@@ -58,7 +58,7 @@ class StaffView(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
     def switch_page(self, page):
-        #Switch the current page and update the table."""
+        #Switch the current page and update the table.
         self.current_page = page
         self.stock_page = 1  
         self.stock_filter = ""  #
@@ -100,11 +100,15 @@ class StaffView(tk.Frame):
             self.load_VIP_Menu()
 
     def load_orders(self):
-        columns = ("table", "beer", "amount", "complete", "cancel")
+        columns = ("table", "beer", "amount", "action")
         self.table["columns"] = columns
         for col in columns:
-            self.table.heading(col, text=col.capitalize(), anchor="w")
-            self.table.column(col, width=150 if col in ("table", "beer", "amount") else 100, anchor="w")
+            if col == "action":
+                self.table.heading(col, text=col.capitalize(), anchor="center")
+                self.table.column(col, width=200, anchor="center")
+            else:
+                self.table.heading(col, text=col.capitalize(), anchor="w")
+                self.table.column(col, width=150, anchor="w")
 
         self.controller.orderModel.loadData()
         self.controller.orderModel.jsonToObject()
@@ -115,54 +119,81 @@ class StaffView(tk.Frame):
                 beer_data = self.controller.beerModel.getDataById(str(item.id))
                 beer_name = beer_data.namn if beer_data else "Unknown"
                 amount = item.amount
+                # Create an identifier that encodes the order and item indices.
                 iid = f"order_{order_index}_item_{item_index}"
-                self.table.insert("", "end", iid=iid, values=(table_number, beer_name, amount, "Complete", "Cancel"))
+                # Combine the two actions into a single cell with a delimiter.
+                action_text = "Complete | Cancel"
+                self.table.insert("", "end", iid=iid, values=(table_number, beer_name, amount, action_text))
 
+        # Bind clicks to our custom handler.
         self.table.bind("<Button-1>", self.on_order_action_click)
+
 
     def on_order_action_click(self, event):
         selected_item = self.table.identify_row(event.y)
         selected_column = self.table.identify_column(event.x)
         if selected_item and selected_column:
-            column_index = int(selected_column[1:]) - 1  # Convert '#1' to 0, '#2' to 1, etc.
+            # Determine which column was clicked.
+            column_index = int(selected_column[1:]) - 1  # e.g., '#1' -> 0, '#2' -> 1, etc.
             column_name = self.table["columns"][column_index]
-            if column_name in ["complete", "cancel"]:
-                # Parse iid to get order and item indices
-                parts = selected_item.split("_")
-                if len(parts) == 4 and parts[0] == "order" and parts[2] == "item":
-                    order_index = int(parts[1])
-                    item_index = int(parts[3])
-                    self.order_action(column_name, order_index, item_index)
+            if column_name == "action":
+                # Get the bounding box of the clicked cell.
+                bbox = self.table.bbox(selected_item, selected_column)
+                if bbox:
+                    cell_x, cell_y, cell_width, cell_height = bbox
+                    # Calculate click position relative to the cell.
+                    x_offset = event.x - cell_x
+                    # Divide the cell in two halves.
+                    if x_offset < cell_width / 2:
+                        action = "action1"  # Left half → "Complete"
+                    else:
+                        action = "action2"  # Right half → "Cancel"
+                    
+                    # Parse the iid to retrieve order and item indices.
+                    parts = selected_item.split("_")
+                    if len(parts) == 4 and parts[0] == "order" and parts[2] == "item":
+                        order_index = int(parts[1])
+                        item_index = int(parts[3])
+                        self.order_action(action, order_index, item_index)
+
 
     def load_stock(self):
+        # Use a single "action" column instead of separate action columns.
         columns = ("id", "beer", "amount", "action")
         self.table["columns"] = columns
         for col in columns:
-            self.table.heading(col, text=col.capitalize(), anchor="w")
-            self.table.column(col, width=150, anchor="w")
+            if col == "action":
+                self.table.heading(col, text=col.capitalize(), anchor="center")
+                self.table.column(col, width=200, anchor="center")
+            else:
+                self.table.heading(col, text=col.capitalize(), anchor="w")
+                self.table.column(col, width=150, anchor="w")
 
-        # Fetch paginated stock data with lazy loading
+        # Get menu and VIP menu IDs to filter stock
+        menu_and_vip_ids = self.controller.get_menu_and_vip_menu_ids()
+
+        # Fetch filtered stock data
         total, details, current_page, total_pages = self.controller.stockModel.view_total_stock_page(
-            self.stock_page, self.stock_page_size, self.stock_filter)
+            self.stock_page, self.stock_page_size, self.stock_filter, filter_ids=menu_and_vip_ids)
+        
         stock_data = []
         for line in details.split("\n"):
             if ":" in line:
-                bev, amt = line.split(":")
+                bev, amt = line.rsplit(":", 1)
                 bev_id = bev.strip().split(" (nr: ")[1].rstrip(")")
                 bev_name = bev.split(" (nr: ")[0].strip()
                 stock_data.append({"id": bev_id, "beer": bev_name, "amount": int(amt.strip())})
 
         for item in stock_data:
-            self.table.insert("", "end", values=(item["id"], item["beer"], item["amount"], ""), tags=("action_row",))
+            action_text = "Increase | Reduce"
+            self.table.insert("", "end", values=(item["id"], item["beer"], item["amount"], action_text))
 
-        for iid in self.table.get_children():
-            self.action_buttons(iid, ["edit"], self.stock_action)
+        self.table.bind("<Button-1>", self.on_stock_action_click)
 
-        # Add filter and pagination controls using grid inside a control frame
+        # Add filter and pagination controls 
         control_frame = tk.Frame(self.table_frame, bg="white")
         control_frame.pack(pady=5)
 
-        # Filter controls
         self.filter_label = tk.Label(control_frame, text="Filter by ID or name:", font=self.custom_font, bg="white")
         self.filter_label.grid(row=0, column=0, padx=5)
         self.filter_entry = tk.Entry(control_frame)
@@ -170,11 +201,11 @@ class StaffView(tk.Frame):
         self.filter_btn = tk.Button(control_frame, text="Filter", **self.button_style, command=lambda: self.apply_stock_filter(self.filter_entry.get()))
         self.filter_btn.grid(row=0, column=2, padx=5)
 
-        # Pagination buttons
         self.prev_btn = tk.Button(control_frame, text="Previous", **self.button_style, command=self.prev_stock_page)
         self.prev_btn.grid(row=0, column=3, padx=5)
         self.next_btn = tk.Button(control_frame, text="Next", **self.button_style, command=self.next_stock_page)
         self.next_btn.grid(row=0, column=4, padx=5)
+
 
     def prev_stock_page(self):
         if self.stock_page > 1:
@@ -191,19 +222,23 @@ class StaffView(tk.Frame):
         self.load_page("stock")
 
     def load_reservations(self):
-        # Define columns
-        # Define columns with "People" between "Table_number" and "Time"
-        columns = ("table", "people", "time", "status", "complete", "cancel")
+        # Use a single "action" column.
+        columns = ("table", "people", "time", "status", "action")
         self.table["columns"] = columns
         for col in columns:
-            self.table.heading(col, text=col.capitalize(), anchor="w")
-            self.table.column(col, width=150 if col in ("table", "people", "time", "status") else 100, anchor="w")
+            if col == "action":
+                self.table.heading(col, text=col.capitalize(), anchor="center")
+                self.table.column(col, width=200, anchor="center")
+            else:
+                self.table.heading(col, text=col.capitalize(), anchor="w")
+                self.table.column(col, width=150 if col in ("table", "people", "time", "status") else 100, anchor="w")
 
         # Populate with reservation data
-            reservations = self.controller.get_reservations()  # List of Reservation objects
+        reservations = self.controller.get_reservations()  # List of Reservation objects
         for res_index, res in enumerate(reservations):
             iid = f"res_{res_index}"
-            self.table.insert("", "end", iid=iid, values=(res.table_number, res.people, res.time, res.status, "Complete", "Cancel"))
+            action_text = "Complete | Cancel"
+            self.table.insert("", "end", iid=iid, values=(res.table_number, res.people, res.time, res.status, action_text))
 
         # Bind click event for actions
         self.table.bind("<Button-1>", self.on_reservation_action_click)
@@ -241,15 +276,26 @@ class StaffView(tk.Frame):
         add_btn = tk.Button(add_frame, text="Add", command=self.add_reservation)
         add_btn.pack(side="left", padx=10)
 
+
     def on_reservation_action_click(self, event):
         selected_item = self.table.identify_row(event.y)
         selected_column = self.table.identify_column(event.x)
         if selected_item and selected_column:
-            column_index = int(selected_column[1:]) - 1  # Convert '#1' to 0, '#2' to 1, etc.
+            column_index = int(selected_column[1:]) - 1  
             column_name = self.table["columns"][column_index]
-            if column_name in ["complete", "cancel"]:
-                res_index = int(selected_item.split("_")[1])
-                self.reservation_action(column_name, res_index)
+            if column_name == "action":
+                bbox = self.table.bbox(selected_item, selected_column)
+                if bbox:
+                    cell_x, cell_y, cell_width, cell_height = bbox
+                    x_offset = event.x - cell_x
+                    if x_offset < cell_width / 2:
+                        action = "action1"  # Left half → Complete
+                    else:
+                        action = "action2"  # Right half → Cancel
+                    
+                    res_index = int(selected_item.split("_")[1])
+                    self.reservation_action(action, res_index)
+
 
     def add_reservation(self):
         table_number = self.table_number_entry.get()
@@ -266,7 +312,7 @@ class StaffView(tk.Frame):
             mbox.showerror("Error", f"Failed to add reservation: {str(e)}")
 
     def adjust_people(self, delta):
-        #Adjust the number of people for the new reservation.
+        # Adjust the number of people for the new reservation.
         current = self.people_var.get()
         new_value = max(1, current + delta)  # Ensure at least 1 person
         self.people_var.set(new_value)
@@ -295,7 +341,7 @@ class StaffView(tk.Frame):
         ##for iid in self.table.get_children():
             #self.action_buttons(iid, ["remove"], self.menu_action)
 
-        # Add menu addition frame below the table
+        # menu below the table
         add_frame = tk.Frame(self.table_frame, bg="white")
         add_frame.pack(pady=10)
 
@@ -407,7 +453,7 @@ class StaffView(tk.Frame):
         action_frame = tk.Frame(self.table)
         for action in actions:
             btn = tk.Button(action_frame, text=action.capitalize(),
-                            bg="green" if action == "complete" else "#ADD8E6",
+                            bg="green" if action == "action1" else "#ADD8E6",
                             fg="white", command=lambda a=action, i=iid: callback(a, i))
             btn.pack(side="left", padx=2)
         # Set the last column's value to the action_frame widget
@@ -415,33 +461,78 @@ class StaffView(tk.Frame):
         self.table.item(iid, values=values)
 
     def order_action(self, action, order_index, item_index):
-        "Handle order actions for a specific item."
         orders = self.controller.orderModel.staticData
         if 0 <= order_index < len(orders):
             order = orders[order_index]
             if 0 <= item_index < len(order.orderItems):
-                if action in ["complete", "cancel"]:
-                    # Remove the item from the order
+                item = order.orderItems[item_index]
+                if action == "action1":  # "Complete" button
+                    beverage_id = str(item.id)
+                    # Get current stock for this item
+                    current_stock = self.controller.stockModel.get_stock(beverage_id)
+                    # Check if there’s enough stock
+                    if current_stock >= item.amount:
+                        # Deduct stock
+                        new_stock = current_stock - item.amount
+                        self.controller.stockModel.update_stock(beverage_id, new_stock)
+                        print(f"Stock updated for {beverage_id}: {new_stock}")
+                        # Remove the completed item from the order
+                        del order.orderItems[item_index]
+                        # If the order has no more items, remove the entire order
+                        if not order.orderItems:
+                            del orders[order_index]
+                    else:
+                        # Show error if stock is insufficient
+                        beer_data = self.controller.beerModel.getDataById(beverage_id)
+                        beer_name = beer_data.namn if beer_data else "Unknown"
+                        import tkinter.messagebox as mbox
+                        mbox.showerror("Error", f"Insufficient stock for {beer_name}. Available: {current_stock}, Required: {item.amount}")
+                elif action == "action2":  # "Cancel" button
+                    # Remove item without affecting stock
                     del order.orderItems[item_index]
-                    # Remove the order if it has no items left
                     if not order.orderItems:
                         del orders[order_index]
-                    self.controller.orderModel.saveData()
-                    self.load_page("order")
+                # Save changes and refresh the page
+                self.controller.orderModel.saveData()
+                self.load_page("order")
 
-    def stock_action(self, action, iid):
-        "Handle stock actions."
-        if action == "edit":
-            bev_id = self.table.item(iid, "values")[0]
-            new_amount = tk.simpledialog.askinteger("Edit Stock", f"New amount for {bev_id}:")
-            if new_amount is not None:
+
+    def on_stock_action_click(self, event):
+        selected_item = self.table.identify_row(event.y)
+        selected_column = self.table.identify_column(event.x)
+        if selected_item and selected_column:
+            column_index = int(selected_column[1:]) - 1  # e.g., '#1' -> 0, '#2' -> 1, etc.
+            column_name = self.table["columns"][column_index]
+            if column_name == "action":
+                bbox = self.table.bbox(selected_item, selected_column)
+                if bbox:
+                    cell_x, cell_y, cell_width, cell_height = bbox
+                    x_offset = event.x - cell_x
+                    if x_offset < cell_width / 2:
+                        action = "action1"  # Left half → Increase
+                    else:
+                        action = "action2"  # Right half → Reduce
+                    bev_id = self.table.item(selected_item, "values")[0]
+                    self.stock_action(action, bev_id)
+
+
+    def stock_action(self, action, bev_id):
+        current_amount = self.controller.stockModel.get_stock(bev_id)
+        if action == "action1":
+            new_amount = current_amount + 1
+            self.controller.updateStockData(bev_id, new_amount)
+        elif action == "action2":
+            if current_amount > 0:
+                new_amount = current_amount - 1
                 self.controller.updateStockData(bev_id, new_amount)
-                self.load_page("stock")
+                if new_amount == 0:
+                    self.controller.stockModel.remove_beverage_by_id(bev_id)
+        self.load_page("stock")  # Refresh the page
 
     def reservation_action(self, action, res_index):
-        if action == "complete":
+        if action == "action1":
             self.controller.complete_reservation(res_index)
-        elif action == "cancel":
+        elif action == "action2":
             self.controller.cancel_reservation(res_index)
         self.load_page("reservation")  # Refresh the page
 
