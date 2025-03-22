@@ -3,8 +3,11 @@
 # -----------------------------
 languages = {
     'English': {
+        # For Home_view
+        'Order_Now': "Order Now",
+        'VIP_Test' : "VIP (test Only)",
         # For Login_view
-        'app_title': "Home",
+        'app_title': "The Flying Dutchman",
         'language_label': "Select Language:",
         'radio_vip': "VIP Customer",
         'radio_staff': "Staff",
@@ -56,11 +59,14 @@ languages = {
         'cancel': "Cancel",
         'remove': "Remove",
         'confirm': "Confirm",
+        "VIP_menu_page": "VIP Menu",
 
         # For Reservation_view
         'reservation_page': "Reservations",
         'add_reservation': "Add Reservation",
         'cancel_reservation': "Cancel Reservation",
+        'date': "Date",
+        'time': "Time",
 
         # For SendOrder_view
         'confirmed_order': "Confirmed Order",
@@ -79,6 +85,13 @@ languages = {
         'payment': "Pay Now",
         'Unknown, Please Order first.': "Unknown, Please Order first.",
 
+        # For payment_view
+        'pay_all': "Pay All",
+        'unpaid_items': "Unpaid Items",
+        'pending_items': "Pending Items",
+        'paid_items': "Paid Items",
+        'pay': "Pay",
+
         # For Home_VIP_view
         'vip_home_welcome': "Welcome!",
         'vip_home_phone': "Phone number:",
@@ -90,8 +103,11 @@ languages = {
 
     },
     '中文': {
+        # For Home_view
+        'Order_Now': "立即點單",
+        'VIP_Test' : "VIP (僅供測試)",
         # For Login_view
-        'app_title': "酒館登錄系統",
+        'app_title': "飛行荷蘭人酒吧",
         'language_label': "選擇語言：",
         'radio_vip': "VIP 客戶",
         'radio_staff': "員工",
@@ -143,11 +159,14 @@ languages = {
         'cancel': "取消",
         'remove': "移除",
         'confirm': "確認",
+        "VIP_menu_page": "VIP 菜單",
 
         # For Reservation_view
         'reservation_page': "預訂",
         'add_reservation': "新增預訂",
         'cancel_reservation': "取消預訂",
+        'date': "日期",
+        'time': "時間",
 
         # For SendOrder_view
         'confirmed_order': "已確認的訂單",
@@ -165,6 +184,13 @@ languages = {
         'payment': "去付款",
         'Unknown, Please Order first.': "未知，請先下單。",
 
+        # For payment_view
+        'pay_all': "全部付款",
+        'unpaid_items': "未付款項目",
+        'pending_items': "待處理項目",
+        'paid_items': "已付款項目",
+        'pay': "付款",
+
         #For Home_VIP_view
         'vip_home_welcome': "歡迎！",
         'vip_home_phone': "電話號碼：",
@@ -175,8 +201,11 @@ languages = {
         'vip_home_self_service_msg': "您的密碼是：{code}。\n 請前往附近的冰箱並輸入此密碼，您取出的飲料將自動結算。\n 此密碼有效期為 10 分鐘。"
     },
     'Svenska': {
+        #For Home_view
+        'Order_Now': "Beställ Nu",
+        'VIP_Test' : "VIP (endast test)",
         # For Login_view
-        'app_title': "Pub Inloggningssystem",
+        'app_title': "Den flygande holländaren",
         'language_label': "Välj Språk:",
         'radio_vip': "VIP-kund",
         'radio_staff': "Personal",
@@ -228,11 +257,14 @@ languages = {
         'cancel': "Avbryt",
         'remove': "Ta bort",
         'confirm': "Bekräfta",
+        "VIP_menu_page": "VIP Meny",
 
         # For Reservation_view
         'reservation_page': "Bokningar",
         'add_reservation': "Lägg till bokning",
         'cancel_reservation': "Avbryt bokning",
+        'date': "Datum",
+        'time': "Tid",
 
         # For SendOrder_view
         'confirmed_order': "Bekräftad beställning",
@@ -249,6 +281,14 @@ languages = {
         'Your_table_number_is': "Ditt bordnummer är",
         'payment': "Betala Nu",
         'Unknown, Please Order first.': "Okänd, Vänligen beställ först.",
+
+        # For payment_view
+        'pay_all': "Betala Allt",
+        'unpaid_items': "Obetalda Artiklar",
+        'pending_items': "Väntande Artiklar",
+        'paid_items': "Betald Artik",
+        'pay': "Betala",
+
 
         #For Home_VIP_view
         'vip_home_welcome': "Välkommen!",

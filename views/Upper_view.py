@@ -30,7 +30,7 @@ class UpperView(Frame):
 
         # 多語系字典（預設英文）/ Multi-language dictionary (default English)
         self.languages = languages
-        self.current_language = "English"
+        self.current_language = self.controller.current_language
 
         # Grid配置 / Grid configuration
         self.grid_rowconfigure(0, weight=1)
@@ -154,6 +154,7 @@ class UpperView(Frame):
         Update the current UI text based on the new language code
         """
         self.current_language = lang_code
+        self.title_label.config(text=self.languages[lang_code].get('app_title', "The Flying Dutchman"))
         # 為了保持按鈕文字和登入狀態一致，我們在這裡呼叫 update_header()
         # To keep button text consistent with login status, call update_header() here
         self.update_header()

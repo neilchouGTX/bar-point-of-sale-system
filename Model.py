@@ -8,10 +8,3 @@ from models.MenuModelAndData import *
 from models.OrderModelAndData import *
 from models.ReservationModelAndData import *
 
-
-
-# stockModel = StockModel()
-#menuModel=MenuModel()
-
-# orderModel=OrderModel()
-# print(orderModel.staticData[0].totalPrice)

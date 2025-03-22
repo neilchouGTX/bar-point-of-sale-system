@@ -19,28 +19,28 @@ class Controller():
         self.orders = ["Order1: 2 x Beverage A", "Order2: 1 x Beverage B"]
         self.table_number = -1
 
-        ## 全局语言设置 / Global language setting
+        ## Global language setting
         self.current_language = "English"
 
         ## View # Must initialize self.view at first
         self.view = BaseView(self)
 
-        # 設置初始語言給所有視圖    
+        # Initialize all views    
         self.view.update_all_languages(self.current_language)
 
 
-        # 建立或取得登录视图，并绑定登录相关事件
+        # create the login view
         if 'LoginView' in self.view.frames:
             self.login_view = self.view.frames['LoginView']
         else:
             self.login_view = LoginView(self.view, self)
             self.view.frames['LoginView'] = self.login_view
         
-        # 绑定登录、登出事件 / Bind login and logout events
+        # Bind login and logout events
         self.login_view.bind_login(self.handle_login)
         self.login_view.bind_logout(self.handle_logout)
 
-        # 绑定 UpperView 里的语言切换控件/ Bind Language change in Upperview.py
+        # Bind Language change in Upperview.py
         self.upper_view = self.view.frames.get("UpperView")
 
         if self.upper_view and hasattr(self.upper_view, "combo"):
@@ -49,37 +49,8 @@ class Controller():
         else:
             print("Combo box not found!")
 
-    # def handle_login(self):
-    #     """
-    #     處理登入邏輯：取得使用者類型與識別資訊，
-    #     若輸入有效，則透過 model 執行 login，並更新視圖以顯示登出狀態；
-    #     否則顯示錯誤訊息。
-    #     """
-    #     user_type = self.login_view.get_selected_user_type()
-    #     identifier = self.login_view.get_identifier_input()
-    #     if identifier.strip():
-    #         self.userModel.login(user_type, identifier)
-    #         self.login_view.show_logout_view(user_type, identifier)
-    #         if user_type == "Staff":
-    #             self.show_staff_page()
-    #         if user_type == "VIP":
-    #             self.show_VIP_page()
-
-    #     else:
-    #         self.login_view.show_error_message("請輸入有效資訊 / Please enter valid information.")
-    
-    # def handle_logout(self):
-    #     """
-    #     處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面。
-    #     """
-    #     self.userModel.logout()
-    #     self.login_view.show_login_view()
     def handle_login(self):
         """
-        處理登入邏輯：
-        如果是 VIP，檢查電話號碼是否有效；若成功則登入並進入 VIPView。
-        如果是 Staff，暫時直接登入並進入 StaffView。
-        如果識別資訊為空或驗證失敗，顯示錯誤訊息。
         Handle login logic:
         - If user_type is VIP, verify phone number. If successful, go to VIPView.
         - If user_type is Staff, proceed to StaffView (for now).
@@ -88,26 +59,25 @@ class Controller():
         user_type = self.login_view.get_selected_user_type()
         identifier = self.login_view.get_identifier_input().strip()
 
-        # 檢查是否有輸入識別資訊 / Check if identifier is not empty
+        # Check if identifier is not empty
         if not identifier:
             self.login_view.show_error_message("請輸入有效資訊 / Please enter valid information.")
             return
         
         if user_type == "VIP":
-            # 透過 vipModel 驗證手機號碼
             # Verify phone number via vipModel
             success = self.vipModel.verify_login_by_phone(identifier)
             if success:
-                # 成功後紀錄 VIP 登入資訊，並跳轉至 VIPView
+                # Record VIP login info and go to VIPView
                 self.login_view.show_logout_view("VIP", identifier)
                 #self.show_VIP_page()
                 self.show_frame("HomeVIPView")
                 self.view.frames["UpperView"].update_header()
             else:
-                # 顯示錯誤提示
+                # Show error message if phone number is invalid
                 self.login_view.show_error_message("電話號碼錯誤 / Incorrect phone number.")
         else:
-            # Staff：目前直接登入並進入 StaffView。可依需求擴充檢驗員工ID
+            # Staff: Currently login directly and enter StaffView. Can add staff ID verification as needed
             self.userModel.login("Staff", identifier)
             self.login_view.show_logout_view("Staff", identifier)
             self.show_staff_page()
@@ -115,7 +85,6 @@ class Controller():
 
     def handle_logout(self):
         """
-        處理登出邏輯：呼叫 model.logout 並更新視圖顯示登入畫面
         Handle logout logic: call model.logout and update the view to show login page
         """
         self.userModel.logout()    # or self.vipModel.logout() if you like to unify
@@ -126,14 +95,12 @@ class Controller():
     
     def handle_non_member(self):
         """
-        處理非會員操作，跳轉到首頁
         Handle non-member action and navigate to HomeView
         """
         self.view.show_frame("HomeView")
         
     def handle_language_change(self, event=None):
         """
-        處理語言切換事件，更新全局語言並通知視圖更新
         Handle the language change event, update the global language, and notify views to refresh
         """
         selected_lang = self.upper_view.selected_var.get()
@@ -141,26 +108,14 @@ class Controller():
     
     def set_language(self, lang_code):
         """
-        設置全局語言並通知 Base_view 更新所有視圖語言
         Set the global language and notify Base_view to update all view languages
         """
         self.current_language = lang_code
         self.view.update_all_languages(lang_code)
 
-    # def handle_language_change(self):
-    #     """
-    #     處理語言切換邏輯：取得使用者選擇的語言並更新視圖顯示。
-    #     """
-    #     selected_lang = self.login_view.get_selected_language()
-    #     self.login_view.update_language(selected_lang)
-
     def show_frame(self, page_name):
-        """
-        顯示指定頁面，並確保語言同步
-        Show the specified page and ensure the language is synchronized
-        """
+        # Show the specified page and ensure the language is synchronized
         self.view.show_frame(page_name)
-        # 確保新顯示的頁面語言更新
         frame = self.view.frames.get(page_name)
         if frame and hasattr(frame, "update_language"):
             frame.update_language(self.current_language)
@@ -199,7 +154,7 @@ class Controller():
         return theData
     
     def refreshOrderView(self, category):
-        """讓 OrderViewNew 重新加載新分類的數據"""
+        # Refresh the OrderView with the given category
         order_view = self.view.frames.get("OrderViewNew")
         order_view_VIP = self.view.frames.get("OrderViewVIP")
         if order_view:

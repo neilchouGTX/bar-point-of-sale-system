@@ -13,7 +13,9 @@ class HomeView(Frame):
         self.configure(bg="#A7C7E7")
         self.custom_font = get_custom_font(self)
         self.button_style = get_button_style(self)
+        self.current_language = self.controller.current_language 
         self.display()
+        self.update_language(self.current_language)
 
     def display(self):
         # Background Image
@@ -40,12 +42,19 @@ class HomeView(Frame):
         self.staff_login_btn = tk.Button(self, text="Login", **self.button_style, width=10, command=lambda: self.changePage("LoginView"))
         self.staff_login_btn.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
-        self.customer_login_btn = tk.Button(self, text="VIP", **self.button_style,
+        self.customer_login_btn = tk.Button(self, text="VIP (test Only)", **self.button_style,
                                    width=10, command=lambda:(self.changePage("OrderViewVIP"),self.controller.refreshOrderView(None)))
         self.customer_login_btn.place(relx=0.5, rely=0.65, anchor=tk.CENTER)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+    def update_language(self, lang_code):
+        ldict = self.controller.languages[lang_code]
+        self.order_btn.config(text=ldict['Order_Now'])
+        self.staff_login_btn.config(text=ldict['login_button'])
+        self.customer_login_btn.config(text=ldict['VIP_Test'])
+
 
 
     def changePage(self, page_name):

@@ -555,7 +555,8 @@ class StaffView(tk.Frame):
             "order": ldict['order_page'],
             "stock": ldict['stock_page'],
             "reservation": ldict['reservation_page'],
-            "menu": ldict['menu_page']
+            "menu": ldict['menu_page'],
+            "VIP_menu": ldict['VIP_menu_page']
         }
 
         # 逐一更新導航按鈕文字 / Update the text of each navigation button

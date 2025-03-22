@@ -112,6 +112,8 @@ class ReservationView(Frame):
         # 取得當前語言的字典 / Get the current language dictionary
         ldict = self.controller.languages[lang_code]
 
+
+
         # 更新標題文字 / Update the title label
         self.title.config(text=ldict['reservation_page'])
 

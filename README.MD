@@ -5,7 +5,7 @@ This system is the final project by the group "Lost Ship (Python)" for Uppsala U
 ## Members and Contribution
 
 - **An-lung Hsiao**: Menu Processing, Undo and Redo, MVC integration and optimization
-- **Jakob Pettersson**: Inventory Management, Employee Interface, Order Processing
+- **Jakob Pettersson**: Stock Management, Employee Interface, Order Processing
 - **Kyra Kendall**: Responsive Design, Reservation system, Interface optimization
 - **Ping-Han Chou**: Menu and Shopping Cart Processing, Drag and Drop, Payment Page
 - **Shuai Guo** Multilingual Processing, VIP Interface pages, Login and Logout Processing
@@ -20,7 +20,10 @@ This project uses the following packages:
 - **json**
 - **copy**
 
-## Run the File
+## Chatbots
+We used a Chatbot to help refine and optimize our code, making it more concise and high-performing, and we learned valuable lessons throughout the process.
+
+## Run the System
 
 Execute `main.py`:
 
@@ -30,6 +33,9 @@ python main.py
 
 ## Time Reporting For Group And Members
 We believe that everyone spent a significant amount of time on this project. We did not specifically track each person’s hours, and each individual made their own unique contributions. As a result, our collaboration was very enjoyable.
+
+## Github Link
+[bar-point-of-sale-system](https://github.com/neilchouGTX/bar-point-of-sale-system/)
 
 ## Directory Structure
 ```
