@@ -8,7 +8,7 @@ This system is the final project by the group "Lost Ship (Python)" for Uppsala U
 - **Jakob Pettersson**: Stock Management, Employee Interface, Order Processing
 - **Kyra Kendall**: Responsive Design, Reservation system, Interface optimization
 - **Ping-Han Chou**: Menu and Shopping Cart Processing, Drag and Drop, Payment Page
-- **Shuai Guo** Multilingual Processing, VIP Interface pages, Login and Logout Processing
+- **Shuai Guo**: Multilingual Processing, VIP Interface pages, Login and Logout Processing
 
 ## Dependencies Pacakages
 
