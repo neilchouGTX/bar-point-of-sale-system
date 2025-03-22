@@ -21,7 +21,7 @@ This project uses the following packages:
 - **copy**
 
 ## Chatbots
-We used a Chatbot to help refine and optimize our code, making it more concise and high-performing, and we learned valuable lessons throughout the process.
+We used some AI to help refine and optimize our code, making it more concise and high-performing, and we learned valuable lessons throughout the process.
 
 ## Run the System
 
